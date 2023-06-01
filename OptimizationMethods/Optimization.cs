@@ -23,7 +23,7 @@ namespace OptimizationMethods
     public class Optimization : ViewModelBase
     {
 
-        private DispatcherTimer distimer = new DispatcherTimer() { Interval = new TimeSpan() };
+        private DispatcherTimer distimer = new DispatcherTimer() { Interval = new TimeSpan(0, 0, 1) };
 
         private string functionAsString = "(x,y)=>x*x+y*y";
 
@@ -85,7 +85,7 @@ namespace OptimizationMethods
             };
         }
 
-        public PlotModel createPlotModel()
+        public PlotModel createPlotModel(List<Point> points)
         {
             var model = new PlotModel()
             {
@@ -106,6 +106,7 @@ namespace OptimizationMethods
             });
             model.Axes.Add(new OxyPlot.Axes.LinearColorAxis
             {
+                //Palette = OxyPalettes.Rainbow(256),
                 Palette = OxyPalettes.Magma(256),
                 Position = AxisPosition.Top,
                 MajorTickSize = 10,
@@ -126,6 +127,20 @@ namespace OptimizationMethods
                 Data = HeatMap,
             };
             model.Series.Add(heatMapSeries);
+
+            var scatterSeries = new OxyPlot.Series.ScatterSeries
+            {
+                MarkerType = MarkerType.Circle,
+                MarkerFill = OxyColors.Red,
+
+            };
+
+            for (int i = 0; i < points.Count; i++)
+            {
+                scatterSeries.Points.Add(new ScatterPoint(points[i].X, points[i].Y, 7, 0));
+            }
+
+            model.Series.Add(scatterSeries);
             return model;
         }
 
@@ -155,7 +170,7 @@ namespace OptimizationMethods
                 HeatMap = createHeatMap(function, Point.FromString(FirstBorder), Point.FromString(SecondBorder), LinspaceValue);
             }
 
-            MyPlotModel = createPlotModel();
+            MyPlotModel = createPlotModel(new List<Point> { new Point(0, 0), new Point(1, 1)});
         }
 
         public void distimerTick()
@@ -171,7 +186,7 @@ namespace OptimizationMethods
                 HeatMap = createHeatMap(function, Point.FromString(FirstBorder), Point.FromString(SecondBorder), LinspaceValue);
             }
 
-            MyPlotModel = createPlotModel();
+            MyPlotModel = createPlotModel(new List<Point> { new Point(0, 0), new Point(1, 1) });
         }
 
         private string startStopButtonName = "Start";
