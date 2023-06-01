@@ -1,0 +1,135 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:OptimizationMethods.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="OptimizationMethods.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="OptimizationMethods"
+		xmlns:oxy="http://oxyplot.org/avalonia"
+		x:Name="MyWindow">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+	<DockPanel>
+		<Grid ShowGridLines="False">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="5*"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+
+			<oxy:PlotView Model="{Binding Optimization.MyPlotModel}"/>
+
+			<Grid Grid.Column="1">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					
+				</Grid.RowDefinitions>
+
+				<TextBlock Text="Function"
+						   Grid.Row="0"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"/>
+				<TextBox Text="{Binding Optimization.FunctionAsString}"
+						 Grid.Row="1"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="0,0,7,0"
+						 FontSize="20"/>
+				<TextBlock Text="First Border"
+						   Grid.Row="2"
+						   VerticalAlignment="Center"
+					       HorizontalAlignment="Center"
+						   FontSize="20"/>
+				<TextBox Text="{Binding Optimization.FirstBorder}"
+						 Grid.Row="3"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="0,0,7,0"
+						 FontSize="20"/>
+				<TextBlock Text="Second Border"
+						   Grid.Row="4"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"/>
+				<TextBox Text="{Binding Optimization.SecondBorder}"
+						 Grid.Row="5"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="0,0,7,0"
+						 FontSize="20"/>
+				<TextBlock Text="Linspace Value"
+						   Grid.Row="6"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"/>
+				<TextBox Text="{Binding Optimization.LinspaceValue}"
+						 Grid.Row="7"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="0,0,7,0"
+						 FontSize="20"/>
+				<Button Command="{Binding Optimization.distimerStartStop}"
+						Content="{Binding Optimization.StartStopButtonName}"
+						Grid.Row="8"
+						HorizontalAlignment="Stretch"
+						VerticalAlignment="Stretch"
+						HorizontalContentAlignment="Center"
+						VerticalContentAlignment="Center"
+						Margin="0,3,7,3"
+						FontSize="20"/>
+				<Button Command="{Binding Optimization.distimerReset}"
+						Content="Reset"
+						Grid.Row="9"
+						HorizontalAlignment="Stretch"
+						VerticalAlignment="Stretch"
+						HorizontalContentAlignment="Center"
+						VerticalContentAlignment="Center"
+						Margin="0,3,7,3"
+						FontSize="20"/>
+				<ComboBox SelectedIndex="{Binding Optimization.IndexMethod, Mode=TwoWay}" 
+						  HorizontalAlignment="Stretch"
+						  VerticalAlignment="Stretch"
+						  Grid.Row="10"
+						  Margin="0,0,7,0"
+						  VerticalContentAlignment="Center"
+						  HorizontalContentAlignment="Center"
+						  FontSize="20">
+					<ComboBoxItem Content="Classic ROI"/>
+					<ComboBoxItem Content="Inertial ROI"/>
+				</ComboBox>
+
+			</Grid>
+
+		</Grid>
+	</DockPanel>
+
+</Window>
