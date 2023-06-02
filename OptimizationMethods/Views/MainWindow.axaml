@@ -22,6 +22,7 @@
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="5*"/>
 				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
 
 			<oxy:PlotView Model="{Binding Optimization.MyPlotModel}"/>
@@ -126,9 +127,49 @@
 					<ComboBoxItem Content="Classic ROI"/>
 					<ComboBoxItem Content="Inertial ROI"/>
 				</ComboBox>
-
+				<TextBlock Text="Number Of Points"
+						   Grid.Row="11"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"/>
+				<TextBox Text="{Binding Optimization.NumberOfPoints}"
+						 Grid.Row="12"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="0,0,7,0"
+						 FontSize="20"/>
+				<Button Command="{Binding Optimization.setRandomPoints}"
+						Content="Set Random Points"
+						Grid.Row="13"
+						HorizontalAlignment="Stretch"
+						VerticalAlignment="Stretch"
+						HorizontalContentAlignment="Center"
+						VerticalContentAlignment="Center"
+						Margin="0,3,7,3"
+						FontSize="20"/>
 			</Grid>
 
+			<Grid Grid.Column="2">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+
+				</Grid.RowDefinitions>
+			</Grid>
 		</Grid>
 	</DockPanel>
 

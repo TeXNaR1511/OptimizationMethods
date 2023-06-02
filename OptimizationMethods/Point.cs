@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Avalonia.Animation.Animators;
 using MathNet.Numerics.Distributions;
 using MathNet.Numerics.Random;
 
@@ -60,6 +61,11 @@ namespace OptimizationMethods
         public static Point operator -(Point a, Point b)
         {
             return new Point(a.X - b.X, a.Y - b.Y);
+        }
+
+        public static Point operator -(Point a)
+        {
+            return new Point(-a.X, -a.Y);
         }
 
         public static Point operator *(Point a, double b)

@@ -17,6 +17,7 @@ using OxyPlot.Series;
 using System.Reflection;
 using Microsoft.CodeAnalysis.Scripting;
 using System.Text.RegularExpressions;
+using Avalonia.Controls.Templates;
 
 namespace OptimizationMethods
 {
@@ -76,6 +77,20 @@ namespace OptimizationMethods
             set => this.RaiseAndSetIfChanged(ref myPlotModel, value);
         }
 
+        private List<Point> PreviousPoints = new List<Point>();
+
+        private List<Point> CurrentPoints = new List<Point>();
+
+        private List<Point> Velocity = new List<Point>();
+
+        private int numberOfPoints = 10;
+
+        public int NumberOfPoints
+        {
+            get => numberOfPoints;
+            set => this.RaiseAndSetIfChanged(ref numberOfPoints, value);
+        }
+
         public Optimization()
         {
             initDistimerTick();
@@ -114,8 +129,8 @@ namespace OptimizationMethods
                 TickStyle = TickStyle.Inside
             });
             
-            var a = Point.FromString(FirstBorder);
-            var b = Point.FromString(SecondBorder);
+            Point a = Point.FromString(FirstBorder);
+            Point b = Point.FromString(SecondBorder);
             var heatMapSeries = new OxyPlot.Series.HeatMapSeries
             {
                 X0 = Math.Min(a.X, b.X),
@@ -131,10 +146,9 @@ namespace OptimizationMethods
             var scatterSeries = new OxyPlot.Series.ScatterSeries
             {
                 MarkerType = MarkerType.Circle,
-                MarkerFill = OxyColors.Red,
-
+                MarkerFill = OxyColor.FromRgb(0, 157, 255),
             };
-
+            //System.Diagnostics.Debug.WriteLine(points.Count);
             for (int i = 0; i < points.Count; i++)
             {
                 scatterSeries.Points.Add(new ScatterPoint(points[i].X, points[i].Y, 7, 0));
@@ -156,37 +170,62 @@ namespace OptimizationMethods
             return CSharpScript.EvaluateAsync<Func<double, double, double>>(s, ScriptOptions.Default.WithImports("System.Math")).Result;
         }
 
+        public void setRandomPoints()
+        {
+            CurrentPoints = new List<Point>();
+            PreviousPoints = new List<Point>();
+            Velocity = new List<Point>();
+            //System.Diagnostics.Debug.WriteLine(FirstBorder + SecondBorder);
+            //System.Diagnostics.Debug.WriteLine(Point.FromString(FirstBorder));
+            //System.Diagnostics.Debug.WriteLine(Point.FromString(SecondBorder));
+            for (int i = 0; i < NumberOfPoints; i++)
+            {
+                Point cur = Point.CreateRandomPoint(Point.FromString(FirstBorder), Point.FromString(SecondBorder));
+                //System.Diagnostics.Debug.WriteLine(a);
+                Point vel = Point.CreateRandomPoint(-Point.FromString(SecondBorder) + Point.FromString(FirstBorder), Point.FromString(SecondBorder) - Point.FromString(FirstBorder));
+                CurrentPoints.Add(cur);
+                Velocity.Add(vel);
+                PreviousPoints.Add(cur - vel);
+            }
+            MyPlotModel = createPlotModel(CurrentPoints);
+        }
+
         public void initDistimerTick()
         {
             //System.Diagnostics.Debug.WriteLine("init");
             function = EvaluateFunction(FunctionAsString);
-            if (ClassicROI)
-            {
-                //HeatMap = new double[,] { { 1, 2, 3}, { 4, 5, 6} };
-                HeatMap = createHeatMap(function, Point.FromString(FirstBorder), Point.FromString(SecondBorder), LinspaceValue);
-            }
-            if (InertialROI)
-            {
-                HeatMap = createHeatMap(function, Point.FromString(FirstBorder), Point.FromString(SecondBorder), LinspaceValue);
-            }
+            HeatMap = createHeatMap(function, Point.FromString(FirstBorder), Point.FromString(SecondBorder), LinspaceValue);
 
-            MyPlotModel = createPlotModel(new List<Point> { new Point(0, 0), new Point(1, 1)});
+            MyPlotModel = createPlotModel(CurrentPoints);
+
         }
 
         public void distimerTick()
         {
             //System.Diagnostics.Debug.WriteLine("tick");
             function = EvaluateFunction(FunctionAsString);
+            HeatMap = createHeatMap(function, Point.FromString(FirstBorder), Point.FromString(SecondBorder), LinspaceValue);
             if (ClassicROI)
             {
-                HeatMap = createHeatMap(function, Point.FromString(FirstBorder), Point.FromString(SecondBorder), LinspaceValue);
+                //System.Diagnostics.Debug.WriteLine(NumberOfPoints);
+                List<List<Point>> a = Methods.ClassicROIIter(CurrentPoints, PreviousPoints, Velocity, function, NumberOfPoints, Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1)), Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1)));
+                //System.Diagnostics.Debug.WriteLine(CurrentPoints.Count);
+                PreviousPoints = new List<Point>();
+                PreviousPoints = CurrentPoints;
+                //System.Diagnostics.Debug.WriteLine(PreviousPoints.Count);
+                CurrentPoints = new List<Point>();
+                CurrentPoints = a[0];
+                //System.Diagnostics.Debug.WriteLine(CurrentPoints.Count);
+                Velocity = new List<Point>();
+                Velocity = a[1];
+                //System.Diagnostics.Debug.WriteLine(Velocity.Count);
             }
             if (InertialROI)
             {
-                HeatMap = createHeatMap(function, Point.FromString(FirstBorder), Point.FromString(SecondBorder), LinspaceValue);
+                
             }
 
-            MyPlotModel = createPlotModel(new List<Point> { new Point(0, 0), new Point(1, 1) });
+            MyPlotModel = createPlotModel(CurrentPoints);
         }
 
         private string startStopButtonName = "Start";
@@ -214,6 +253,9 @@ namespace OptimizationMethods
         public void distimerReset()
         {
             distimer.Stop();
+            CurrentPoints = new List<Point>();
+            PreviousPoints = new List<Point>();
+            Velocity = new List<Point>();
             initDistimerTick();
             StartStopButtonName = "Start";
         }
