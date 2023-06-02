@@ -77,11 +77,21 @@ namespace OptimizationMethods
             set => this.RaiseAndSetIfChanged(ref myPlotModel, value);
         }
 
-        private List<Point> PreviousPoints = new List<Point>();
-
         private List<Point> CurrentPoints = new List<Point>();
 
         private List<Point> Velocity = new List<Point>();
+
+        private List<Point> BestPoints = new List<Point>();
+
+        private Point BestPoint = new Point();
+
+        private double bestSolution = double.PositiveInfinity;
+
+        public double BestSolution
+        {
+            get => bestSolution;
+            set => this.RaiseAndSetIfChanged(ref bestSolution, value);
+        }
 
         private int numberOfPoints = 10;
 
@@ -107,17 +117,23 @@ namespace OptimizationMethods
                 PlotAreaBorderThickness = new OxyThickness(2),
                 DefaultFontSize = 20,
             };
+            Point a = Point.FromString(FirstBorder);
+            Point b = Point.FromString(SecondBorder);
             model.Axes.Add(new OxyPlot.Axes.LinearAxis
             {
                 Position = AxisPosition.Bottom,
                 MajorTickSize = 10,
                 MinorTickSize = 7,
+                AbsoluteMaximum = Math.Max(a.X, b.X),
+                AbsoluteMinimum = Math.Min(a.X, b.X),
             });
             model.Axes.Add(new OxyPlot.Axes.LinearAxis
             {
                 Position = AxisPosition.Left,
                 MajorTickSize = 10,
                 MinorTickSize = 7,
+                AbsoluteMaximum = Math.Max(a.Y, b.Y),
+                AbsoluteMinimum = Math.Min(a.Y, b.Y),
             });
             model.Axes.Add(new OxyPlot.Axes.LinearColorAxis
             {
@@ -129,8 +145,7 @@ namespace OptimizationMethods
                 TickStyle = TickStyle.Inside
             });
             
-            Point a = Point.FromString(FirstBorder);
-            Point b = Point.FromString(SecondBorder);
+            
             var heatMapSeries = new OxyPlot.Series.HeatMapSeries
             {
                 X0 = Math.Min(a.X, b.X),
@@ -149,6 +164,7 @@ namespace OptimizationMethods
                 MarkerFill = OxyColor.FromRgb(0, 157, 255),
             };
             //System.Diagnostics.Debug.WriteLine(points.Count);
+            //i < Math.Min(NumberOfPoints, points.Count)
             for (int i = 0; i < points.Count; i++)
             {
                 scatterSeries.Points.Add(new ScatterPoint(points[i].X, points[i].Y, 7, 0));
@@ -173,7 +189,7 @@ namespace OptimizationMethods
         public void setRandomPoints()
         {
             CurrentPoints = new List<Point>();
-            PreviousPoints = new List<Point>();
+            BestPoints = new List<Point>();
             Velocity = new List<Point>();
             //System.Diagnostics.Debug.WriteLine(FirstBorder + SecondBorder);
             //System.Diagnostics.Debug.WriteLine(Point.FromString(FirstBorder));
@@ -185,8 +201,8 @@ namespace OptimizationMethods
                 Point vel = Point.CreateRandomPoint(-Point.FromString(SecondBorder) + Point.FromString(FirstBorder), Point.FromString(SecondBorder) - Point.FromString(FirstBorder));
                 CurrentPoints.Add(cur);
                 Velocity.Add(vel);
-                PreviousPoints.Add(cur - vel);
             }
+            BestPoints = CurrentPoints;
             MyPlotModel = createPlotModel(CurrentPoints);
         }
 
@@ -208,16 +224,18 @@ namespace OptimizationMethods
             if (ClassicROI)
             {
                 //System.Diagnostics.Debug.WriteLine(NumberOfPoints);
-                List<List<Point>> a = Methods.ClassicROIIter(CurrentPoints, PreviousPoints, Velocity, function, NumberOfPoints, Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1)), Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1)));
+                List<List<Point>> a = Methods.ClassicROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, NumberOfPoints, Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1)), Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1)));
                 //System.Diagnostics.Debug.WriteLine(CurrentPoints.Count);
-                PreviousPoints = new List<Point>();
-                PreviousPoints = CurrentPoints;
+                //BestPoints = new List<Point>();
                 //System.Diagnostics.Debug.WriteLine(PreviousPoints.Count);
-                CurrentPoints = new List<Point>();
+                //CurrentPoints = new List<Point>();
                 CurrentPoints = a[0];
                 //System.Diagnostics.Debug.WriteLine(CurrentPoints.Count);
-                Velocity = new List<Point>();
+                //Velocity = new List<Point>();
                 Velocity = a[1];
+                BestPoints = a[2];
+                BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
+                BestSolution = function(BestPoint.X, BestPoint.Y);
                 //System.Diagnostics.Debug.WriteLine(Velocity.Count);
             }
             if (InertialROI)
@@ -254,8 +272,10 @@ namespace OptimizationMethods
         {
             distimer.Stop();
             CurrentPoints = new List<Point>();
-            PreviousPoints = new List<Point>();
+            BestPoints = new List<Point>();
             Velocity = new List<Point>();
+            BestPoint = new Point();
+            BestSolution = double.PositiveInfinity;
             initDistimerTick();
             StartStopButtonName = "Start";
         }
