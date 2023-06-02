@@ -157,6 +157,7 @@
 						  FontSize="20">
 					<ComboBoxItem Content="Classic ROI"/>
 					<ComboBoxItem Content="Inertial ROI"/>
+					<ComboBoxItem Content="Canonical ROI"/>
 				</ComboBox>
 				<Button Command="{Binding Optimization.distimerStartStop}"
 						Content="{Binding Optimization.StartStopButtonName}"
@@ -185,6 +186,7 @@
 						<MultiBinding Converter="{x:Static BoolConverters.Or}">
 							<Binding Path="Optimization.ClassicROI"/>
 							<Binding Path="Optimization.InertialROI"/>
+							<Binding Path="Optimization.CanonicalROI"/>
 						</MultiBinding>
 					</TextBlock.IsVisible>
 				</TextBlock>
@@ -195,12 +197,12 @@
 						 VerticalContentAlignment="Center"
 						 HorizontalContentAlignment="Center"
 						 Margin="5"
-						 FontSize="20"
-						 IsVisible="{Binding Optimization.ClassicROI}">
+						 FontSize="20">
 					<TextBox.IsVisible>
 						<MultiBinding Converter="{x:Static BoolConverters.Or}">
 							<Binding Path="Optimization.ClassicROI"/>
 							<Binding Path="Optimization.InertialROI"/>
+							<Binding Path="Optimization.CanonicalROI"/>
 						</MultiBinding>
 					</TextBox.IsVisible>
 				</TextBox>
@@ -208,12 +210,12 @@
 						   Grid.Row="5"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
-						   FontSize="20"
-						   IsVisible="{Binding Optimization.ClassicROI}">
+						   FontSize="20">
 					<TextBlock.IsVisible>
 						<MultiBinding Converter="{x:Static BoolConverters.Or}">
 							<Binding Path="Optimization.ClassicROI"/>
 							<Binding Path="Optimization.InertialROI"/>
+							<Binding Path="Optimization.CanonicalROI"/>
 						</MultiBinding>
 					</TextBlock.IsVisible>
 				</TextBlock>
@@ -224,12 +226,12 @@
 						 VerticalContentAlignment="Center"
 						 HorizontalContentAlignment="Center"
 						 Margin="5"
-						 FontSize="20"
-						 IsVisible="{Binding Optimization.ClassicROI}">
+						 FontSize="20">
 					<TextBox.IsVisible>
 						<MultiBinding Converter="{x:Static BoolConverters.Or}">
 							<Binding Path="Optimization.ClassicROI"/>
 							<Binding Path="Optimization.InertialROI"/>
+							<Binding Path="Optimization.CanonicalROI"/>
 						</MultiBinding>
 					</TextBox.IsVisible>
 				</TextBox>
@@ -248,6 +250,21 @@
 						 Margin="5"
 						 FontSize="20"
 						 IsVisible="{Binding Optimization.InertialROI}"/>
+				<TextBlock Text="Kanon"
+						   Grid.Row="7"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"
+						   IsVisible="{Binding Optimization.CanonicalROI}"/>
+				<TextBox Text="{Binding Optimization.Kanon}"
+						 Grid.Row="8	"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="5"
+						 FontSize="20"
+						 IsVisible="{Binding Optimization.CanonicalROI}"/>
 			</Grid>
 		</Grid>
 	</DockPanel>

@@ -122,6 +122,13 @@ namespace OptimizationMethods
             set => this.RaiseAndSetIfChanged(ref inertia, value);
         }
 
+        private double kanon = 0.5;
+        public double Kanon
+        {
+            get => kanon;
+            set => this.RaiseAndSetIfChanged(ref kanon, value);
+        }
+
         public Optimization()
         {
             initDistimerTick();
@@ -243,7 +250,8 @@ namespace OptimizationMethods
             HeatMap = createHeatMap(function, Point.FromString(FirstBorder), Point.FromString(SecondBorder), LinspaceValue);
             if (ClassicROI)
             {
-                List<List<Point>> a = Methods.ClassicROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, NumberOfPoints, Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1)), new Point(R_p, R_g));
+                var phi = Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1));
+                List<List<Point>> a = Methods.ClassicROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, NumberOfPoints, phi, new Point(R_p, R_g));
                 CurrentPoints = a[0];
                 Velocity = a[1];
                 BestPoints = a[2];
@@ -252,7 +260,18 @@ namespace OptimizationMethods
             }
             if (InertialROI)
             {
-                List<List<Point>> a = Methods.InertialROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, NumberOfPoints, Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1)), new Point(R_p, R_g), Inertia);
+                var phi = Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1));
+                List<List<Point>> a = Methods.InertialROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, NumberOfPoints, phi, new Point(R_p, R_g), Inertia);
+                CurrentPoints = a[0];
+                Velocity = a[1];
+                BestPoints = a[2];
+                BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
+                BestSolution = Math.Round(function(BestPoint.X, BestPoint.Y), 7);
+            }
+            if (CanonicalROI)
+            {
+                var phi = Point.CreateRandomPoint(new Point(2, 2), new Point(4, 4));    
+                List<List<Point>> a = Methods.CanonicalROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, NumberOfPoints, phi, new Point(R_p, R_g), Kanon);
                 CurrentPoints = a[0];
                 Velocity = a[1];
                 BestPoints = a[2];
@@ -328,6 +347,14 @@ namespace OptimizationMethods
             set => this.RaiseAndSetIfChanged(ref inertialROI, value);
         }
 
+        private bool canonicalROI = false;
+
+        public bool CanonicalROI
+        {
+            get => canonicalROI;
+            set => this.RaiseAndSetIfChanged(ref canonicalROI, value);
+        }
+
         private string indexMethod = "0";
 
         public string IndexMethod
@@ -339,11 +366,19 @@ namespace OptimizationMethods
                 {
                     ClassicROI = true;
                     InertialROI = false;
+                    CanonicalROI = false;
                 }
                 else if (value == "1")
                 {
                     ClassicROI = false;
                     InertialROI = true;
+                    CanonicalROI = false;
+                }
+                else if (value == "2")
+                {
+                    ClassicROI = false;
+                    InertialROI = false;
+                    CanonicalROI = true;
                 }
                 this.RaiseAndSetIfChanged(ref indexMethod, value);
             }
