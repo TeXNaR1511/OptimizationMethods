@@ -86,7 +86,7 @@ namespace OptimizationMethods
         public static Point FromString(string s)
         {
             s = s.Trim();
-            Regex regex = new Regex(@"\(-?\d+(\.\d+)?,[ ]*-?\d+(\.\d+)?\)");
+            Regex regex = new Regex(@"\(-?\d+(\.\d+)?\,[ ]*-?\d+(\.\d+)?\)");
             MatchCollection matches = regex.Matches(s);
             if (s == null || matches.Count != 1)
             {
@@ -96,7 +96,10 @@ namespace OptimizationMethods
             {
                 s = s.Remove(0, 1);
                 s = s.Remove(s.Length - 1);
+                //Console.WriteLine(s);
                 string[] strings = s.Split(new char[] { ',' });
+                strings[0] = strings[0].Replace('.', ',');
+                strings[1] = strings[1].Replace('.', ',');
                 return new Point(Convert.ToDouble(strings[0]), Convert.ToDouble(strings[1]));
             }
         }

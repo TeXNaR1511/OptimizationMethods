@@ -1,23 +1,17 @@
 ﻿using Avalonia.Threading;
+using DynamicData;
+using MathNet.Numerics.Distributions;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
 using OptimizationMethods.ViewModels;
+using OxyPlot;
+using OxyPlot.Axes;
+using OxyPlot.Series;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MathNet.Numerics;
-using OxyPlot;
-using OxyPlot.Avalonia;
-using DynamicData;
-using OxyPlot.Axes;
-using OxyPlot.Series;
-using System.Reflection;
-using Microsoft.CodeAnalysis.Scripting;
 using System.Text.RegularExpressions;
-using Avalonia.Controls.Templates;
 
 namespace OptimizationMethods
 {
@@ -31,7 +25,7 @@ namespace OptimizationMethods
         public string FunctionAsString
         {
             get => functionAsString;
-            set =>  this.RaiseAndSetIfChanged(ref functionAsString, value);
+            set => this.RaiseAndSetIfChanged(ref functionAsString, value);
         }
 
         private Func<double, double, double> function;
@@ -83,7 +77,7 @@ namespace OptimizationMethods
 
         private List<Point> BestPoints = new List<Point>();
 
-        private Point BestPoint = new Point();
+        private Point BestPoint = new Point(double.PositiveInfinity, double.PositiveInfinity);
 
         private double bestSolution = double.PositiveInfinity;
 
@@ -129,8 +123,42 @@ namespace OptimizationMethods
             set => this.RaiseAndSetIfChanged(ref kanon, value);
         }
 
+        private int kNeighbours = 3;
+        public int KNeighbours
+        {
+            get => kNeighbours;
+            set => this.RaiseAndSetIfChanged(ref kNeighbours, value);
+        }
+
+        private string rKNN = "0.1, 0.1, 0.5, 0.5, 0.5";
+
+        public string RKNN
+        {
+            get => rKNN;
+            set => this.RaiseAndSetIfChanged(ref rKNN, value);
+        }
+
         public Optimization()
         {
+
+            //var b = new List<Point> { new Point(1, 1), new Point(2, 2), new Point(3, 3), new Point(4, 4) };
+            //var a = Methods.findKNN(b, 3);
+
+            //System.Diagnostics.Debug.WriteLine(a.Count);
+
+            //for (int i = 0; i < b.Count; i++)
+            //{
+            //    System.Diagnostics.Debug.Write(b[i]);
+            //}
+            //System.Diagnostics.Debug.WriteLine(" ");
+            //for (int i = 0; i < a.Count; i++)
+            //{
+            //    for (int j = 0; j < a[i].Count; j++)
+            //    {
+            //        System.Diagnostics.Debug.Write(a[i][j]);
+            //    }
+            //    System.Diagnostics.Debug.WriteLine(" ");
+            //}
             initDistimerTick();
             distimer.Tick += (s, e) =>
             {
@@ -172,8 +200,8 @@ namespace OptimizationMethods
                 MinorTickSize = 7,
                 TickStyle = TickStyle.Inside
             });
-            
-            
+
+
             var heatMapSeries = new OxyPlot.Series.HeatMapSeries
             {
                 X0 = Math.Min(a.X, b.X),
@@ -199,6 +227,14 @@ namespace OptimizationMethods
             }
 
             model.Series.Add(scatterSeries);
+
+            var scatterPoint = new OxyPlot.Series.ScatterSeries
+            {
+                MarkerType = MarkerType.Circle,
+                MarkerFill = OxyColor.FromRgb(255, 0, 0),
+            };
+            scatterPoint.Points.Add(new ScatterPoint(BestPoint.X, BestPoint.Y, 7, 0));
+            model.Series.Add(scatterPoint);
             return model;
         }
 
@@ -230,7 +266,9 @@ namespace OptimizationMethods
                 CurrentPoints.Add(cur);
                 Velocity.Add(vel);
             }
+
             BestPoints = CurrentPoints;
+            BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
             MyPlotModel = createPlotModel(CurrentPoints);
         }
 
@@ -270,8 +308,21 @@ namespace OptimizationMethods
             }
             if (CanonicalROI)
             {
-                var phi = Point.CreateRandomPoint(new Point(2, 2), new Point(4, 4));    
+                var phi = Point.CreateRandomPoint(new Point(2, 2), new Point(4, 4));
                 List<List<Point>> a = Methods.CanonicalROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, NumberOfPoints, phi, new Point(R_p, R_g), Kanon);
+                CurrentPoints = a[0];
+                Velocity = a[1];
+                BestPoints = a[2];
+                BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
+                BestSolution = Math.Round(function(BestPoint.X, BestPoint.Y), 7);
+            }
+            if (KNNROI)
+            {
+                List<double> r = ListDoubleFromString(RKNN);
+                var uniform1 = new ContinuousUniform(0, 1);
+                List<double> phi = uniform1.Samples().Take(KNeighbours + 2).ToList();
+                //List<double> phi = new List<double> { uniform1.Sample(), uniform1.Sample(), uniform1.Sample() };
+                List<List<Point>> a = Methods.KNNROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, KNeighbours, function, NumberOfPoints, phi, r, Inertia);
                 CurrentPoints = a[0];
                 Velocity = a[1];
                 BestPoints = a[2];
@@ -310,7 +361,7 @@ namespace OptimizationMethods
             CurrentPoints = new List<Point>();
             BestPoints = new List<Point>();
             Velocity = new List<Point>();
-            BestPoint = new Point();
+            BestPoint = new Point(double.PositiveInfinity, double.PositiveInfinity);
             BestSolution = double.PositiveInfinity;
             initDistimerTick();
             StartStopButtonName = "Start";
@@ -355,6 +406,14 @@ namespace OptimizationMethods
             set => this.RaiseAndSetIfChanged(ref canonicalROI, value);
         }
 
+        private bool knnROI = false;
+
+        public bool KNNROI
+        {
+            get => knnROI;
+            set => this.RaiseAndSetIfChanged(ref knnROI, value);
+        }
+
         private string indexMethod = "0";
 
         public string IndexMethod
@@ -367,23 +426,56 @@ namespace OptimizationMethods
                     ClassicROI = true;
                     InertialROI = false;
                     CanonicalROI = false;
+                    KNNROI = false;
                 }
                 else if (value == "1")
                 {
                     ClassicROI = false;
                     InertialROI = true;
                     CanonicalROI = false;
+                    KNNROI = false;
                 }
                 else if (value == "2")
                 {
                     ClassicROI = false;
                     InertialROI = false;
                     CanonicalROI = true;
+                    KNNROI = false;
+                }
+                else if (value == "3")
+                {
+                    ClassicROI = false;
+                    InertialROI = false;
+                    CanonicalROI = false;
+                    KNNROI = true;
                 }
                 this.RaiseAndSetIfChanged(ref indexMethod, value);
             }
         }
 
-        
+        public List<double> ListDoubleFromString(string s)
+        {
+            s = s.Trim();
+            List<double> result = new List<double>();
+            int count = s.Count(f => f == ',');
+            if (count != KNeighbours + 1)
+            {
+                for (int i = 0; i < KNeighbours + 2; i++)
+                {
+                    result.Add(0.5);
+                }
+            }
+            else
+            {
+                string[] splt = s.Split(',');
+                for (int i = 0; i < splt.Length; i++)
+                {
+                    result.Add(Convert.ToDouble(splt[i].Replace('.', ',')));
+                }
+            }
+            return result;
+        }
+
+
     }
 }

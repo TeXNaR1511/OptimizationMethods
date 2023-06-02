@@ -82,5 +82,46 @@ namespace OptimizationMethods
             }
             return new List<List<Point>> { points, newVelocity, newBestPoints };
         }
+
+        public static List<List<Point>> findKNN(List<Point> points, int kNeighbours)
+        {
+            List<List<Point>> result = new List<List<Point>>();
+            for (int i = 0; i < points.Count; i++)
+            {
+                List<Point> temp = points.ToList();
+                temp.Sort((x, y) => Point.Distance(x, points[i]).CompareTo(Point.Distance(y, points[i])));
+                List<Point> sub = temp.GetRange(1, kNeighbours);
+                result.Add(sub);
+            }
+            return result;
+        }
+
+        public static List<List<Point>> KNNROIIter(List<Point> points, List<Point> velocity, List<Point> bestPoints, Point best, int kNeighbours, Func<double, double, double> function, int numberOfPoints, List<double> Phi, List<double> R, double inertia)
+        {
+            List<Point> newVelocity = new List<Point>();
+            var listWithNeighbors = findKNN(points, kNeighbours);
+            for (int i = 0; i < numberOfPoints; i++)
+            {
+                Point temp = new Point();
+                temp += inertia * velocity[i] + R[0] * Phi[0] * (bestPoints[i] - points[i]) + R[1] * Phi[1] * (best - points[i]);
+                for (int j = 2; j < listWithNeighbors[i].Count; j++)
+                {
+                    temp += R[j] * Phi[j] * (listWithNeighbors[i][j] - points[i]);
+                }
+                newVelocity.Add(temp);
+            }
+            for (int i = 0; i < numberOfPoints; i++)
+            {
+                points[i] += newVelocity[i];
+            }
+
+            List<Point> newBestPoints = new List<Point>();
+            for (int i = 0; i < numberOfPoints; i++)
+            {
+                newBestPoints.Add(function(points[i].X, points[i].Y) <= function(bestPoints[i].X, bestPoints[i].Y) ? points[i] : bestPoints[i]);
+            }
+
+            return new List<List<Point>> { points, newVelocity, newBestPoints };
+        }
     }
 }

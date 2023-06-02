@@ -158,6 +158,7 @@
 					<ComboBoxItem Content="Classic ROI"/>
 					<ComboBoxItem Content="Inertial ROI"/>
 					<ComboBoxItem Content="Canonical ROI"/>
+					<ComboBoxItem Content="KNN ROI"/>
 				</ComboBox>
 				<Button Command="{Binding Optimization.distimerStartStop}"
 						Content="{Binding Optimization.StartStopButtonName}"
@@ -239,17 +240,29 @@
 						   Grid.Row="7"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
-						   FontSize="20"
-						   IsVisible="{Binding Optimization.InertialROI}"/>
+						   FontSize="20">
+					<TextBlock.IsVisible>
+						<MultiBinding Converter="{x:Static BoolConverters.Or}">
+							<Binding Path="Optimization.InertialROI"/>
+							<Binding Path="Optimization.KNNROI"/>
+						</MultiBinding>
+					</TextBlock.IsVisible>
+				</TextBlock>
 				<TextBox Text="{Binding Optimization.Inertia}"
-						 Grid.Row="8	"
+						 Grid.Row="8"
 						 VerticalAlignment="Stretch"
 						 HorizontalAlignment="Stretch"
 						 VerticalContentAlignment="Center"
 						 HorizontalContentAlignment="Center"
 						 Margin="5"
-						 FontSize="20"
-						 IsVisible="{Binding Optimization.InertialROI}"/>
+						 FontSize="20">
+					<TextBox.IsVisible>
+						<MultiBinding Converter="{x:Static BoolConverters.Or}">
+							<Binding Path="Optimization.InertialROI"/>
+							<Binding Path="Optimization.KNNROI"/>
+						</MultiBinding>
+					</TextBox.IsVisible>
+				</TextBox>
 				<TextBlock Text="Kanon"
 						   Grid.Row="7"
 						   VerticalAlignment="Center"
@@ -257,7 +270,7 @@
 						   FontSize="20"
 						   IsVisible="{Binding Optimization.CanonicalROI}"/>
 				<TextBox Text="{Binding Optimization.Kanon}"
-						 Grid.Row="8	"
+						 Grid.Row="8"
 						 VerticalAlignment="Stretch"
 						 HorizontalAlignment="Stretch"
 						 VerticalContentAlignment="Center"
@@ -265,6 +278,36 @@
 						 Margin="5"
 						 FontSize="20"
 						 IsVisible="{Binding Optimization.CanonicalROI}"/>
+				<TextBlock Text="R"
+						   Grid.Row="3"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"
+						   IsVisible="{Binding Optimization.KNNROI}"/>
+				<TextBox Text="{Binding Optimization.RKNN}"
+						 Grid.Row="4"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="5"
+						 FontSize="20"
+						 IsVisible="{Binding Optimization.KNNROI}"/>
+				<TextBlock Text="K Neighbours"
+						   Grid.Row="5"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"
+						   IsVisible="{Binding Optimization.KNNROI}"/>
+				<TextBox Text="{Binding Optimization.KNeighbours}"
+						 Grid.Row="6"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="5"
+						 FontSize="20"
+						 IsVisible="{Binding Optimization.KNNROI}"/>
 			</Grid>
 		</Grid>
 	</DockPanel>
