@@ -143,7 +143,9 @@
 					<RowDefinition Height="*"/>
 					<RowDefinition Height="*"/>
 					<RowDefinition Height="*"/>
-
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
 				</Grid.RowDefinitions>
 				<ComboBox SelectedIndex="{Binding Optimization.IndexMethod, Mode=TwoWay}"
 						  HorizontalAlignment="Stretch"
@@ -174,6 +176,78 @@
 						VerticalContentAlignment="Center"
 						Margin="5"
 						FontSize="20"/>
+				<TextBlock Text="R_p"
+						   Grid.Row="3"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20">
+					<TextBlock.IsVisible>
+						<MultiBinding Converter="{x:Static BoolConverters.Or}">
+							<Binding Path="Optimization.ClassicROI"/>
+							<Binding Path="Optimization.InertialROI"/>
+						</MultiBinding>
+					</TextBlock.IsVisible>
+				</TextBlock>
+				<TextBox Text="{Binding Optimization.R_p}"
+						 Grid.Row="4"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="5"
+						 FontSize="20"
+						 IsVisible="{Binding Optimization.ClassicROI}">
+					<TextBox.IsVisible>
+						<MultiBinding Converter="{x:Static BoolConverters.Or}">
+							<Binding Path="Optimization.ClassicROI"/>
+							<Binding Path="Optimization.InertialROI"/>
+						</MultiBinding>
+					</TextBox.IsVisible>
+				</TextBox>
+				<TextBlock Text="R_g"
+						   Grid.Row="5"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"
+						   IsVisible="{Binding Optimization.ClassicROI}">
+					<TextBlock.IsVisible>
+						<MultiBinding Converter="{x:Static BoolConverters.Or}">
+							<Binding Path="Optimization.ClassicROI"/>
+							<Binding Path="Optimization.InertialROI"/>
+						</MultiBinding>
+					</TextBlock.IsVisible>
+				</TextBlock>
+				<TextBox Text="{Binding Optimization.R_g}"
+						 Grid.Row="6"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="5"
+						 FontSize="20"
+						 IsVisible="{Binding Optimization.ClassicROI}">
+					<TextBox.IsVisible>
+						<MultiBinding Converter="{x:Static BoolConverters.Or}">
+							<Binding Path="Optimization.ClassicROI"/>
+							<Binding Path="Optimization.InertialROI"/>
+						</MultiBinding>
+					</TextBox.IsVisible>
+				</TextBox>
+				<TextBlock Text="Inertia"
+						   Grid.Row="7"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"
+						   IsVisible="{Binding Optimization.InertialROI}"/>
+				<TextBox Text="{Binding Optimization.Inertia}"
+						 Grid.Row="8	"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="5"
+						 FontSize="20"
+						 IsVisible="{Binding Optimization.InertialROI}"/>
 			</Grid>
 		</Grid>
 	</DockPanel>

@@ -31,23 +31,34 @@ namespace OptimizationMethods
             {
                 newVelocity.Add(velocity[i] + (bestPoints[i] - points[i]) * Phi.X * R.X + (best - points[i]) * Phi.Y * R.Y);
             }
-
             for (int i = 0; i < numberOfPoints; i++)
             {
                 points[i] += newVelocity[i];
             }
-            //System.Diagnostics.Debug.WriteLine(points.Count);
-            //System.Diagnostics.Debug.WriteLine(new_velocity.Count);
-
             List<Point> newBestPoints = new List<Point>();
             for (int i = 0; i < numberOfPoints; i++)
             {
                 newBestPoints.Add(function(points[i].X, points[i].Y) <= function(bestPoints[i].X, bestPoints[i].Y) ? points[i] : bestPoints[i]);
             }
+            return new List<List<Point>> { points, newVelocity, newBestPoints };
+        }
 
-
-            //Point newBest = newBestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
-
+        public static List<List<Point>> InertialROIIter(List<Point> points, List<Point> velocity, List<Point> bestPoints, Point best, Func<double, double, double> function, int numberOfPoints, Point Phi, Point R, double inertia)
+        {
+            List<Point> newVelocity = new List<Point>();
+            for (int i = 0; i < numberOfPoints; i++)
+            {
+                newVelocity.Add(inertia * velocity[i] + (bestPoints[i] - points[i]) * Phi.X * R.X + (best - points[i]) * Phi.Y * R.Y);
+            }
+            for (int i = 0; i < numberOfPoints; i++)
+            {
+                points[i] += newVelocity[i];
+            }
+            List<Point> newBestPoints = new List<Point>();
+            for (int i = 0; i < numberOfPoints; i++)
+            {
+                newBestPoints.Add(function(points[i].X, points[i].Y) <= function(bestPoints[i].X, bestPoints[i].Y) ? points[i] : bestPoints[i]);
+            }
             return new List<List<Point>> { points, newVelocity, newBestPoints };
         }
     }

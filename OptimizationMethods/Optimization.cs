@@ -101,6 +101,27 @@ namespace OptimizationMethods
             set => this.RaiseAndSetIfChanged(ref numberOfPoints, value);
         }
 
+        private double r_p = 0.5;
+        public double R_p
+        {
+            get => r_p;
+            set => this.RaiseAndSetIfChanged(ref r_p, value);
+        }
+
+        private double r_g = 0.5;
+        public double R_g
+        {
+            get => r_g;
+            set => this.RaiseAndSetIfChanged(ref r_g, value);
+        }
+
+        private double inertia = 0.5;
+        public double Inertia
+        {
+            get => inertia;
+            set => this.RaiseAndSetIfChanged(ref inertia, value);
+        }
+
         public Optimization()
         {
             initDistimerTick();
@@ -218,29 +239,25 @@ namespace OptimizationMethods
 
         public void distimerTick()
         {
-            //System.Diagnostics.Debug.WriteLine("tick");
             function = EvaluateFunction(FunctionAsString);
             HeatMap = createHeatMap(function, Point.FromString(FirstBorder), Point.FromString(SecondBorder), LinspaceValue);
             if (ClassicROI)
             {
-                //System.Diagnostics.Debug.WriteLine(NumberOfPoints);
-                List<List<Point>> a = Methods.ClassicROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, NumberOfPoints, Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1)), Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1)));
-                //System.Diagnostics.Debug.WriteLine(CurrentPoints.Count);
-                //BestPoints = new List<Point>();
-                //System.Diagnostics.Debug.WriteLine(PreviousPoints.Count);
-                //CurrentPoints = new List<Point>();
+                List<List<Point>> a = Methods.ClassicROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, NumberOfPoints, Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1)), new Point(R_p, R_g));
                 CurrentPoints = a[0];
-                //System.Diagnostics.Debug.WriteLine(CurrentPoints.Count);
-                //Velocity = new List<Point>();
                 Velocity = a[1];
                 BestPoints = a[2];
                 BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
-                BestSolution = function(BestPoint.X, BestPoint.Y);
-                //System.Diagnostics.Debug.WriteLine(Velocity.Count);
+                BestSolution = Math.Round(function(BestPoint.X, BestPoint.Y), 7);
             }
             if (InertialROI)
             {
-                
+                List<List<Point>> a = Methods.InertialROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, NumberOfPoints, Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1)), new Point(R_p, R_g), Inertia);
+                CurrentPoints = a[0];
+                Velocity = a[1];
+                BestPoints = a[2];
+                BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
+                BestSolution = Math.Round(function(BestPoint.X, BestPoint.Y), 7);
             }
 
             MyPlotModel = createPlotModel(CurrentPoints);
