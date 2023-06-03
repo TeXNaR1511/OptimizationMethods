@@ -187,6 +187,7 @@
 					<ComboBoxItem Content="Inertial ROI"/>
 					<ComboBoxItem Content="Canonical ROI"/>
 					<ComboBoxItem Content="KNN ROI"/>
+					<ComboBoxItem Content="Extinction ROI"/>
 				</ComboBox>
 				<ComboBox SelectedIndex="{Binding Optimization.IndexBound, Mode=TwoWay}"
 						  HorizontalAlignment="Stretch"
@@ -229,6 +230,7 @@
 							<Binding Path="Optimization.ClassicROI"/>
 							<Binding Path="Optimization.InertialROI"/>
 							<Binding Path="Optimization.CanonicalROI"/>
+							<Binding Path="Optimization.ExtinctionROI"/>
 						</MultiBinding>
 					</TextBlock.IsVisible>
 				</TextBlock>
@@ -245,6 +247,7 @@
 							<Binding Path="Optimization.ClassicROI"/>
 							<Binding Path="Optimization.InertialROI"/>
 							<Binding Path="Optimization.CanonicalROI"/>
+							<Binding Path="Optimization.ExtinctionROI"/>
 						</MultiBinding>
 					</TextBox.IsVisible>
 				</TextBox>
@@ -258,6 +261,7 @@
 							<Binding Path="Optimization.ClassicROI"/>
 							<Binding Path="Optimization.InertialROI"/>
 							<Binding Path="Optimization.CanonicalROI"/>
+							<Binding Path="Optimization.ExtinctionROI"/>
 						</MultiBinding>
 					</TextBlock.IsVisible>
 				</TextBlock>
@@ -274,6 +278,7 @@
 							<Binding Path="Optimization.ClassicROI"/>
 							<Binding Path="Optimization.InertialROI"/>
 							<Binding Path="Optimization.CanonicalROI"/>
+							<Binding Path="Optimization.ExtinctionROI"/>
 						</MultiBinding>
 					</TextBox.IsVisible>
 				</TextBox>
@@ -286,6 +291,7 @@
 						<MultiBinding Converter="{x:Static BoolConverters.Or}">
 							<Binding Path="Optimization.InertialROI"/>
 							<Binding Path="Optimization.KNNROI"/>
+							<Binding Path="Optimization.ExtinctionROI"/>
 						</MultiBinding>
 					</TextBlock.IsVisible>
 				</TextBlock>
@@ -301,6 +307,7 @@
 						<MultiBinding Converter="{x:Static BoolConverters.Or}">
 							<Binding Path="Optimization.InertialROI"/>
 							<Binding Path="Optimization.KNNROI"/>
+							<Binding Path="Optimization.ExtinctionROI"/>
 						</MultiBinding>
 					</TextBox.IsVisible>
 				</TextBox>

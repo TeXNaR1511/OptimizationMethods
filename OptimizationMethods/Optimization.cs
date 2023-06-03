@@ -336,7 +336,7 @@ namespace OptimizationMethods
             if (ClassicROI)
             {
                 var phi = Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1));
-                List<List<Point>> a = Methods.ClassicROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, NumberOfPoints, phi, new Point(R_p, R_g));
+                List<List<Point>> a = Methods.ClassicROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, phi, new Point(R_p, R_g));
                 CurrentPoints = a[0];
                 Velocity = a[1];
                 BestPoints = a[2];
@@ -346,7 +346,7 @@ namespace OptimizationMethods
             else if (InertialROI)
             {
                 var phi = Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1));
-                List<List<Point>> a = Methods.InertialROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, NumberOfPoints, phi, new Point(R_p, R_g), Inertia);
+                List<List<Point>> a = Methods.InertialROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, phi, new Point(R_p, R_g), Inertia);
                 CurrentPoints = a[0];
                 Velocity = a[1];
                 BestPoints = a[2];
@@ -356,7 +356,7 @@ namespace OptimizationMethods
             else if (CanonicalROI)
             {
                 var phi = Point.CreateRandomPoint(new Point(2, 2), new Point(4, 4));
-                List<List<Point>> a = Methods.CanonicalROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, NumberOfPoints, phi, new Point(R_p, R_g), Kanon);
+                List<List<Point>> a = Methods.CanonicalROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, phi, new Point(R_p, R_g), Kanon);
                 CurrentPoints = a[0];
                 Velocity = a[1];
                 BestPoints = a[2];
@@ -369,8 +369,23 @@ namespace OptimizationMethods
                 var uniform1 = new ContinuousUniform(0, 1);
                 List<double> phi = uniform1.Samples().Take(KNeighbours + 2).ToList();
                 //List<double> phi = new List<double> { uniform1.Sample(), uniform1.Sample(), uniform1.Sample() };
-                List<List<Point>> a = Methods.KNNROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, KNeighbours, function, NumberOfPoints, phi, r, Inertia);
+                List<List<Point>> a = Methods.KNNROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, KNeighbours, function, phi, r, Inertia);
                 CurrentPoints = a[0];
+                Velocity = a[1];
+                BestPoints = a[2];
+                BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
+                BestSolution = Math.Round(function(BestPoint.X, BestPoint.Y), 7);
+            }
+            else if (ExtinctionROI)
+            {
+                System.Diagnostics.Debug.WriteLine("check");
+                var phi = Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1));
+                List<List<Point>> a = Methods.ExtinctionROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, phi, new Point(R_p, R_g), Inertia);
+                CurrentPoints = a[0];
+                //for (int i = 0; i < CurrentPoints.Count; i++)
+                //{
+                //    System.Diagnostics.Debug.WriteLine(CurrentPoints[i]);
+                //}
                 Velocity = a[1];
                 BestPoints = a[2];
                 BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
@@ -490,6 +505,14 @@ namespace OptimizationMethods
             set => this.RaiseAndSetIfChanged(ref knnROI, value);
         }
 
+        private bool extinctionROI = false;
+
+        public bool ExtinctionROI
+        {
+            get => extinctionROI;
+            set => this.RaiseAndSetIfChanged(ref extinctionROI, value);
+        }
+
         private string indexMethod = "0";
 
         public string IndexMethod
@@ -503,6 +526,7 @@ namespace OptimizationMethods
                     InertialROI = false;
                     CanonicalROI = false;
                     KNNROI = false;
+                    ExtinctionROI = false;
                 }
                 else if (value == "1")
                 {
@@ -510,6 +534,7 @@ namespace OptimizationMethods
                     InertialROI = true;
                     CanonicalROI = false;
                     KNNROI = false;
+                    ExtinctionROI = false;
                 }
                 else if (value == "2")
                 {
@@ -517,6 +542,7 @@ namespace OptimizationMethods
                     InertialROI = false;
                     CanonicalROI = true;
                     KNNROI = false;
+                    ExtinctionROI = false;
                 }
                 else if (value == "3")
                 {
@@ -524,6 +550,15 @@ namespace OptimizationMethods
                     InertialROI = false;
                     CanonicalROI = false;
                     KNNROI = true;
+                    ExtinctionROI = false;
+                }
+                else if (value == "4")
+                {
+                    ClassicROI = false;
+                    InertialROI = false;
+                    CanonicalROI = false;
+                    KNNROI = false;
+                    ExtinctionROI = true;
                 }
                 this.RaiseAndSetIfChanged(ref indexMethod, value);
             }
