@@ -12,6 +12,8 @@ namespace OptimizationMethods.Views
             InitializeComponent();
             Logger.TryGet(LogEventLevel.Fatal, LogArea.Control)?.Log(this, "Avalonia Infrastructure");
             System.Diagnostics.Debug.WriteLine("System Diagnostics Debug");
+            //this.Topmost = true;
+            //SystemDecorations = SystemDecorations.;
             this.WindowState = WindowState.Maximized;
 
             //AvaloniaXamlLoader.Load(this);

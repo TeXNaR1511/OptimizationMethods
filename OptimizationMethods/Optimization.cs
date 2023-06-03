@@ -18,7 +18,7 @@ namespace OptimizationMethods
     public class Optimization : ViewModelBase
     {
 
-        private DispatcherTimer distimer = new DispatcherTimer() { Interval = new TimeSpan(0, 0, 1) };
+        private DispatcherTimer distimer = new DispatcherTimer();
 
         private string functionAsString = "(x,y)=>x*x+y*y";
 
@@ -130,12 +130,20 @@ namespace OptimizationMethods
             set => this.RaiseAndSetIfChanged(ref kNeighbours, value);
         }
 
-        private string rKNN = "0.1, 0.1, 0.5, 0.5, 0.5";
+        private string rKNN = "0.1,0.1,0.5,0.5,0.5";
 
         public string RKNN
         {
             get => rKNN;
             set => this.RaiseAndSetIfChanged(ref rKNN, value);
+        }
+
+        private int updateFrequency = 1000;
+
+        public int UpdateFrequency
+        {
+            get => updateFrequency;
+            set => this.RaiseAndSetIfChanged(ref updateFrequency, value);
         }
 
         public Optimization()
@@ -159,11 +167,14 @@ namespace OptimizationMethods
             //    }
             //    System.Diagnostics.Debug.WriteLine(" ");
             //}
+            distimer.Interval = new TimeSpan(0, 0, 0, 0, UpdateFrequency);
             initDistimerTick();
             distimer.Tick += (s, e) =>
             {
+                distimer.Interval = new TimeSpan(0, 0, 0, 0, UpdateFrequency);
                 distimerTick();
             };
+            //distimer.Interval = new TimeSpan
         }
 
         public PlotModel createPlotModel(List<Point> points)
@@ -214,27 +225,63 @@ namespace OptimizationMethods
             };
             model.Series.Add(heatMapSeries);
 
-            var scatterSeries = new OxyPlot.Series.ScatterSeries
-            {
-                MarkerType = MarkerType.Circle,
-                MarkerFill = OxyColor.FromRgb(0, 157, 255),
-            };
-            //System.Diagnostics.Debug.WriteLine(points.Count);
-            //i < Math.Min(NumberOfPoints, points.Count)
+            //var scatterSeries = new OxyPlot.Series.ScatterSeries
+            //{
+            //    MarkerType = MarkerType.Circle,
+            //    MarkerFill = OxyColor.FromRgb(0, 157, 255),
+            //};
+            ////System.Diagnostics.Debug.WriteLine(points.Count);
+            ////i < Math.Min(NumberOfPoints, points.Count)
+            //for (int i = 0; i < points.Count; i++)
+            //{
+            //    var p = new ScatterPoint(points[i].X, points[i].Y, 7, 0);
+            //    scatterSeries.Points.Add(p);
+            //    scatterSeries.LabelFormatString = i.ToString();
+            //    //scatterSeries.Title = i.ToString();
+            //    //scatterSeries.TrackerFormatString = scatterSeries.TrackerFormatString + "kek";
+            //}
+            //
+            //model.Series.Add(scatterSeries);
+
+            OxyPlot.Series.ScatterSeries pt;
+
             for (int i = 0; i < points.Count; i++)
             {
-                scatterSeries.Points.Add(new ScatterPoint(points[i].X, points[i].Y, 7, 0));
+                pt = new OxyPlot.Series.ScatterSeries
+                {
+                    MarkerType = MarkerType.Circle,
+                    MarkerFill = OxyColor.FromRgb(0, 157, 255),
+                    //TextColor = OxyColors.White,
+                    //FontSize = 10,
+                    //LabelMargin = -5,
+                    
+                };
+                var p = new ScatterPoint(points[i].X, points[i].Y, 7, 0);
+                pt.Points.Add(p);
+                if (Labeled)
+                {
+                    pt.LabelFormatString = i.ToString();
+                    pt.TextColor = OxyColors.White;
+                }
+                model.Series.Add(pt);
             }
-
-            model.Series.Add(scatterSeries);
 
             var scatterPoint = new OxyPlot.Series.ScatterSeries
             {
                 MarkerType = MarkerType.Circle,
                 MarkerFill = OxyColor.FromRgb(255, 0, 0),
+                //TextColor = OxyColors.Gold,
+                //FontSize = 10,
+                //LabelMargin = 10,
             };
             scatterPoint.Points.Add(new ScatterPoint(BestPoint.X, BestPoint.Y, 7, 0));
+            if (Labeled)
+            {
+                scatterPoint.LabelFormatString = "best";
+                scatterPoint.TextColor = OxyColors.Gold;
+            }
             model.Series.Add(scatterPoint);
+
             return model;
         }
 
@@ -296,7 +343,7 @@ namespace OptimizationMethods
                 BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
                 BestSolution = Math.Round(function(BestPoint.X, BestPoint.Y), 7);
             }
-            if (InertialROI)
+            else if (InertialROI)
             {
                 var phi = Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1));
                 List<List<Point>> a = Methods.InertialROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, NumberOfPoints, phi, new Point(R_p, R_g), Inertia);
@@ -306,7 +353,7 @@ namespace OptimizationMethods
                 BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
                 BestSolution = Math.Round(function(BestPoint.X, BestPoint.Y), 7);
             }
-            if (CanonicalROI)
+            else if (CanonicalROI)
             {
                 var phi = Point.CreateRandomPoint(new Point(2, 2), new Point(4, 4));
                 List<List<Point>> a = Methods.CanonicalROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, NumberOfPoints, phi, new Point(R_p, R_g), Kanon);
@@ -316,7 +363,7 @@ namespace OptimizationMethods
                 BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
                 BestSolution = Math.Round(function(BestPoint.X, BestPoint.Y), 7);
             }
-            if (KNNROI)
+            else if (KNNROI)
             {
                 List<double> r = ListDoubleFromString(RKNN);
                 var uniform1 = new ContinuousUniform(0, 1);
@@ -328,6 +375,35 @@ namespace OptimizationMethods
                 BestPoints = a[2];
                 BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
                 BestSolution = Math.Round(function(BestPoint.X, BestPoint.Y), 7);
+            }
+
+            if (NoBounds)
+            {
+                //nothing
+            }
+            else if (Projection)
+            {
+                for (int i = 0; i < CurrentPoints.Count; i++)
+                {
+                    CurrentPoints[i] = Point.GetProjection(CurrentPoints[i], Point.FromString(FirstBorder), Point.FromString(SecondBorder));
+                }
+            }
+            else if (Random)
+            {
+                for (int i = 0; i < CurrentPoints.Count; i++)
+                {
+                    if (!Point.InsideBounds(CurrentPoints[i], Point.FromString(FirstBorder), Point.FromString(SecondBorder)))
+                    {
+                        CurrentPoints[i] = Point.CreateRandomPoint(Point.FromString(FirstBorder), Point.FromString(SecondBorder));
+                    }
+                }
+            }
+            else if (Rebound)
+            {
+                for (int i = 0; i < CurrentPoints.Count; i++)
+                {
+                    CurrentPoints[i] = Point.GetRebound(CurrentPoints[i], Point.FromString(FirstBorder), Point.FromString(SecondBorder));
+                }
             }
 
             MyPlotModel = createPlotModel(CurrentPoints);
@@ -476,6 +552,106 @@ namespace OptimizationMethods
             return result;
         }
 
+        private bool noBounds = true;
+        public bool NoBounds
+        {
+            get => noBounds;
+            set => this.RaiseAndSetIfChanged(ref noBounds, value);
+        }
 
+        private bool projection = false;
+        public bool Projection
+        {
+            get => projection;
+            set => this.RaiseAndSetIfChanged(ref projection, value);
+        }
+
+        private bool random = false;
+        public bool Random
+        {
+            get => random;
+            set => this.RaiseAndSetIfChanged(ref random, value);
+        }
+
+        private bool rebound = false;
+        public bool Rebound
+        {
+            get => rebound;
+            set => this.RaiseAndSetIfChanged(ref rebound, value);
+        }
+
+        private string indexBound = "0";
+
+        public string IndexBound
+        {
+            get => indexBound;
+            set
+            {
+                if (value == "0")
+                {
+                    NoBounds = true;
+                    Projection = false;
+                    Random = false;
+                    Rebound = false;
+                }
+                else if (value == "1")
+                {
+                    NoBounds = false;
+                    Projection = true;
+                    Random = false;
+                    Rebound = false;
+                }
+                else if (value == "2")
+                {
+                    NoBounds = false;
+                    Projection = false;
+                    Random = true;
+                    Rebound = false;
+                }
+                else if (value == "3")
+                {
+                    NoBounds = false;
+                    Projection = false;
+                    Random = false;
+                    Rebound = true;
+                }
+                this.RaiseAndSetIfChanged(ref indexBound, value);
+            }
+        }
+
+        private bool noLabeled = true;
+        public bool NoLabeled
+        {
+            get => noLabeled;
+            set => this.RaiseAndSetIfChanged(ref noLabeled, value);
+        }
+
+        private bool labeled = false;
+        public bool Labeled
+        {
+            get => labeled;
+            set => this.RaiseAndSetIfChanged(ref labeled, value);
+        }
+
+        private string indexLabeled = "0";
+
+        public string IndexLabeled
+        {
+            get => indexLabeled;
+            set
+            {
+                if (value == "0")
+                {
+                    NoLabeled = true;
+                    Labeled = false;
+                }
+                else if (value == "1")
+                {
+                    NoLabeled = false;
+                    Labeled = true;
+                }
+                this.RaiseAndSetIfChanged(ref indexLabeled, value);
+            }
+        }
     }
 }

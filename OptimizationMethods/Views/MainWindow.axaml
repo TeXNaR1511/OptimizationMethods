@@ -42,6 +42,7 @@
 					<RowDefinition Height="*"/>
 					<RowDefinition Height="*"/>
 					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
 				</Grid.RowDefinitions>
 
 				<TextBlock Text="Function"
@@ -111,13 +112,24 @@
 						 HorizontalContentAlignment="Center"
 						 Margin="5"
 						 FontSize="20"/>
+				<ComboBox SelectedIndex="{Binding Optimization.IndexLabeled, Mode=TwoWay}"
+						  HorizontalAlignment="Stretch"
+						  VerticalAlignment="Stretch"
+						  Grid.Row="10"
+						  Margin="5"
+						  VerticalContentAlignment="Center"
+						  HorizontalContentAlignment="Center"
+						  FontSize="20">
+					<ComboBoxItem Content="No Label"/>
+					<ComboBoxItem Content="Label"/>
+				</ComboBox>
 				<TextBlock Text="Number Of Points"
-						   Grid.Row="10"
+						   Grid.Row="11"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
 						   FontSize="20"/>
 				<TextBox Text="{Binding Optimization.NumberOfPoints}"
-						 Grid.Row="11"
+						 Grid.Row="12"
 						 VerticalAlignment="Stretch"
 						 HorizontalAlignment="Stretch"
 						 VerticalContentAlignment="Center"
@@ -126,7 +138,7 @@
 						 FontSize="20"/>
 				<Button Command="{Binding Optimization.setRandomPoints}"
 						Content="Set Points"
-						Grid.Row="12"
+						Grid.Row="13"
 						HorizontalAlignment="Stretch"
 						VerticalAlignment="Stretch"
 						HorizontalContentAlignment="Center"
@@ -146,11 +158,27 @@
 					<RowDefinition Height="*"/>
 					<RowDefinition Height="*"/>
 					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
 				</Grid.RowDefinitions>
+				<TextBlock Text="Update Frequency"
+						   Grid.Row="0"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"/>
+				<TextBox Text="{Binding Optimization.UpdateFrequency}"
+						 Grid.Row="1"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="5"
+						 FontSize="20"/>
 				<ComboBox SelectedIndex="{Binding Optimization.IndexMethod, Mode=TwoWay}"
 						  HorizontalAlignment="Stretch"
 						  VerticalAlignment="Stretch"
-						  Grid.Row="0"
+						  Grid.Row="2"
 						  Margin="5"
 						  VerticalContentAlignment="Center"
 						  HorizontalContentAlignment="Center"
@@ -160,9 +188,22 @@
 					<ComboBoxItem Content="Canonical ROI"/>
 					<ComboBoxItem Content="KNN ROI"/>
 				</ComboBox>
+				<ComboBox SelectedIndex="{Binding Optimization.IndexBound, Mode=TwoWay}"
+						  HorizontalAlignment="Stretch"
+						  VerticalAlignment="Stretch"
+						  Grid.Row="3"
+						  Margin="5"
+						  VerticalContentAlignment="Center"
+						  HorizontalContentAlignment="Center"
+						  FontSize="20">
+					<ComboBoxItem Content="No Bounds"/>
+					<ComboBoxItem Content="Projection"/>
+					<ComboBoxItem Content="Random"/>
+					<ComboBoxItem Content="Rebound"/>
+				</ComboBox>
 				<Button Command="{Binding Optimization.distimerStartStop}"
 						Content="{Binding Optimization.StartStopButtonName}"
-						Grid.Row="1"
+						Grid.Row="4"
 						HorizontalAlignment="Stretch"
 						VerticalAlignment="Stretch"
 						HorizontalContentAlignment="Center"
@@ -171,7 +212,7 @@
 						FontSize="20"/>
 				<Button Command="{Binding Optimization.distimerReset}"
 						Content="Reset"
-						Grid.Row="2"
+						Grid.Row="5"
 						HorizontalAlignment="Stretch"
 						VerticalAlignment="Stretch"
 						HorizontalContentAlignment="Center"
@@ -179,7 +220,7 @@
 						Margin="5"
 						FontSize="20"/>
 				<TextBlock Text="R_p"
-						   Grid.Row="3"
+						   Grid.Row="6"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
 						   FontSize="20">
@@ -192,7 +233,7 @@
 					</TextBlock.IsVisible>
 				</TextBlock>
 				<TextBox Text="{Binding Optimization.R_p}"
-						 Grid.Row="4"
+						 Grid.Row="7"
 						 VerticalAlignment="Stretch"
 						 HorizontalAlignment="Stretch"
 						 VerticalContentAlignment="Center"
@@ -208,7 +249,7 @@
 					</TextBox.IsVisible>
 				</TextBox>
 				<TextBlock Text="R_g"
-						   Grid.Row="5"
+						   Grid.Row="8"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
 						   FontSize="20">
@@ -221,7 +262,7 @@
 					</TextBlock.IsVisible>
 				</TextBlock>
 				<TextBox Text="{Binding Optimization.R_g}"
-						 Grid.Row="6"
+						 Grid.Row="9"
 						 VerticalAlignment="Stretch"
 						 HorizontalAlignment="Stretch"
 						 VerticalContentAlignment="Center"
@@ -237,7 +278,7 @@
 					</TextBox.IsVisible>
 				</TextBox>
 				<TextBlock Text="Inertia"
-						   Grid.Row="7"
+						   Grid.Row="10"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
 						   FontSize="20">
@@ -249,7 +290,7 @@
 					</TextBlock.IsVisible>
 				</TextBlock>
 				<TextBox Text="{Binding Optimization.Inertia}"
-						 Grid.Row="8"
+						 Grid.Row="11"
 						 VerticalAlignment="Stretch"
 						 HorizontalAlignment="Stretch"
 						 VerticalContentAlignment="Center"
@@ -264,13 +305,13 @@
 					</TextBox.IsVisible>
 				</TextBox>
 				<TextBlock Text="Kanon"
-						   Grid.Row="7"
+						   Grid.Row="10"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
 						   FontSize="20"
 						   IsVisible="{Binding Optimization.CanonicalROI}"/>
 				<TextBox Text="{Binding Optimization.Kanon}"
-						 Grid.Row="8"
+						 Grid.Row="11"
 						 VerticalAlignment="Stretch"
 						 HorizontalAlignment="Stretch"
 						 VerticalContentAlignment="Center"
@@ -279,13 +320,13 @@
 						 FontSize="20"
 						 IsVisible="{Binding Optimization.CanonicalROI}"/>
 				<TextBlock Text="R"
-						   Grid.Row="3"
+						   Grid.Row="6"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
 						   FontSize="20"
 						   IsVisible="{Binding Optimization.KNNROI}"/>
 				<TextBox Text="{Binding Optimization.RKNN}"
-						 Grid.Row="4"
+						 Grid.Row="7"
 						 VerticalAlignment="Stretch"
 						 HorizontalAlignment="Stretch"
 						 VerticalContentAlignment="Center"
@@ -294,13 +335,13 @@
 						 FontSize="20"
 						 IsVisible="{Binding Optimization.KNNROI}"/>
 				<TextBlock Text="K Neighbours"
-						   Grid.Row="5"
+						   Grid.Row="8"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
 						   FontSize="20"
 						   IsVisible="{Binding Optimization.KNNROI}"/>
 				<TextBox Text="{Binding Optimization.KNeighbours}"
-						 Grid.Row="6"
+						 Grid.Row="9"
 						 VerticalAlignment="Stretch"
 						 HorizontalAlignment="Stretch"
 						 VerticalContentAlignment="Center"
