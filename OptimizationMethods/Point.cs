@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -40,7 +41,7 @@ namespace OptimizationMethods
 
         public override string ToString()
         {
-            return "(" + X + ", " + Y + ")";
+            return "(" + Math.Round(X, 3).ToString().Replace(',', '.') + "," + Math.Round(Y, 3).ToString().Replace(',', '.') + ")";
         }
 
         public static bool operator ==(Point a, Point b)

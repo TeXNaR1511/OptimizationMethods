@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathNet.Numerics.Distributions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -177,6 +178,34 @@ namespace OptimizationMethods
                 newBestPoints.Add(function(points[i].X, points[i].Y) <= function(bestPoints[i].X, bestPoints[i].Y) ? points[i] : bestPoints[i]);
             }
             return new List<List<Point>> { points, newVelocity, newBestPoints };
+        }
+
+        public static List<List<Point>> SimulatedAnnealingIter(List<Point> points, List<Point> bestPoints, Func<double, double, double> function, double temperature, double inertia)
+        {
+            List<Point> newPoints = new List<Point>();
+            var uniform = new ContinuousUniform(0, 1);
+            for (int i = 0; i < points.Count; i++)
+            {
+                newPoints.Add(points[i] + inertia * temperature * (new Point(uniform.Sample(), uniform.Sample()) - new Point(0.5, 0.5)));
+            }
+
+            for (int i = 0; i < points.Count; i++)
+            {
+                var Delta = function(newPoints[i].X, newPoints[i].Y) - function(points[i].X, points[i].Y);
+                if (Delta < 0 || uniform.Sample() < Math.Exp(-Delta / temperature))
+                {
+                    points[i] = newPoints[i];
+                }
+            }
+
+            List<Point> newBestPoints = new List<Point>();
+            for (int i = 0; i < points.Count; i++)
+            {
+                newBestPoints.Add(function(points[i].X, points[i].Y) <= function(bestPoints[i].X, bestPoints[i].Y) ? points[i] : bestPoints[i]);
+            }
+
+            return new List<List<Point>> { points, newBestPoints };
+            
         }
     }
 }

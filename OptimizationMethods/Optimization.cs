@@ -1,4 +1,5 @@
-﻿using Avalonia.Threading;
+﻿using Avalonia.Animation;
+using Avalonia.Threading;
 using DynamicData;
 using MathNet.Numerics.Distributions;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
@@ -77,7 +78,12 @@ namespace OptimizationMethods
 
         private List<Point> BestPoints = new List<Point>();
 
-        private Point BestPoint = new Point(double.PositiveInfinity, double.PositiveInfinity);
+        private Point bestPoint = new Point(double.PositiveInfinity, double.PositiveInfinity);
+        public Point BestPoint
+        {
+            get => bestPoint;
+            set => this.RaiseAndSetIfChanged(ref bestPoint, value);
+        }
 
         private double bestSolution = double.PositiveInfinity;
 
@@ -145,6 +151,56 @@ namespace OptimizationMethods
             get => updateFrequency;
             set => this.RaiseAndSetIfChanged(ref updateFrequency, value);
         }
+
+        private int livingPoints = 0;
+
+        public int LivingPoints
+        {
+            get => livingPoints;
+            set => this.RaiseAndSetIfChanged(ref livingPoints, value);
+        }
+
+        private int iterationCount = 0;
+
+        public int IterationCount
+        {
+            get => iterationCount;
+            set => this.RaiseAndSetIfChanged(ref iterationCount, value);
+        }
+
+        private double initTemperature = 1.0;
+
+        public double InitTemperature
+        {
+            get => initTemperature;
+            set => this.RaiseAndSetIfChanged(ref initTemperature, value);
+        }
+
+        private double temperature;
+
+        public double Temperature
+        {
+            get => temperature;
+            set => this.RaiseAndSetIfChanged(ref temperature, value);
+        }
+
+        private double cooling = 0.99;
+
+        public double Cooling
+        {
+            get => cooling;
+            set => this.RaiseAndSetIfChanged(ref cooling, value);
+        }
+
+        private int iterBeforeCool = 10;
+
+        public int IterBeforeCool
+        {
+            get => iterBeforeCool;
+            set => this.RaiseAndSetIfChanged(ref iterBeforeCool, value);
+        }
+
+
 
         public Optimization()
         {
@@ -315,22 +371,26 @@ namespace OptimizationMethods
             }
 
             BestPoints = CurrentPoints;
+            LivingPoints = CurrentPoints.Count;
             BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
+            BestSolution = function(BestPoint.X, BestPoint.Y);
             MyPlotModel = createPlotModel(CurrentPoints);
         }
 
         public void initDistimerTick()
         {
+            IterationCount = 0;
+            Temperature = InitTemperature;
             //System.Diagnostics.Debug.WriteLine("init");
             function = EvaluateFunction(FunctionAsString);
             HeatMap = createHeatMap(function, Point.FromString(FirstBorder), Point.FromString(SecondBorder), LinspaceValue);
 
             MyPlotModel = createPlotModel(CurrentPoints);
-
         }
 
         public void distimerTick()
         {
+            IterationCount++;
             function = EvaluateFunction(FunctionAsString);
             HeatMap = createHeatMap(function, Point.FromString(FirstBorder), Point.FromString(SecondBorder), LinspaceValue);
             if (ClassicROI)
@@ -338,30 +398,33 @@ namespace OptimizationMethods
                 var phi = Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1));
                 List<List<Point>> a = Methods.ClassicROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, phi, new Point(R_p, R_g));
                 CurrentPoints = a[0];
+                LivingPoints = CurrentPoints.Count;
                 Velocity = a[1];
                 BestPoints = a[2];
                 BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
-                BestSolution = Math.Round(function(BestPoint.X, BestPoint.Y), 7);
+                BestSolution = function(BestPoint.X, BestPoint.Y);
             }
             else if (InertialROI)
             {
                 var phi = Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1));
                 List<List<Point>> a = Methods.InertialROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, phi, new Point(R_p, R_g), Inertia);
                 CurrentPoints = a[0];
+                LivingPoints = CurrentPoints.Count;
                 Velocity = a[1];
                 BestPoints = a[2];
                 BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
-                BestSolution = Math.Round(function(BestPoint.X, BestPoint.Y), 7);
+                BestSolution = function(BestPoint.X, BestPoint.Y);
             }
             else if (CanonicalROI)
             {
                 var phi = Point.CreateRandomPoint(new Point(2, 2), new Point(4, 4));
                 List<List<Point>> a = Methods.CanonicalROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, phi, new Point(R_p, R_g), Kanon);
                 CurrentPoints = a[0];
+                LivingPoints = CurrentPoints.Count;
                 Velocity = a[1];
                 BestPoints = a[2];
                 BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
-                BestSolution = Math.Round(function(BestPoint.X, BestPoint.Y), 7);
+                BestSolution = function(BestPoint.X, BestPoint.Y);
             }
             else if (KNNROI)
             {
@@ -371,17 +434,19 @@ namespace OptimizationMethods
                 //List<double> phi = new List<double> { uniform1.Sample(), uniform1.Sample(), uniform1.Sample() };
                 List<List<Point>> a = Methods.KNNROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, KNeighbours, function, phi, r, Inertia);
                 CurrentPoints = a[0];
+                LivingPoints = CurrentPoints.Count;
                 Velocity = a[1];
                 BestPoints = a[2];
                 BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
-                BestSolution = Math.Round(function(BestPoint.X, BestPoint.Y), 7);
+                BestSolution = function(BestPoint.X, BestPoint.Y);
             }
             else if (ExtinctionROI)
             {
-                System.Diagnostics.Debug.WriteLine("check");
+                //System.Diagnostics.Debug.WriteLine("check");
                 var phi = Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1));
                 List<List<Point>> a = Methods.ExtinctionROIIter(CurrentPoints, Velocity, BestPoints, BestPoint, function, phi, new Point(R_p, R_g), Inertia);
                 CurrentPoints = a[0];
+                LivingPoints = CurrentPoints.Count;
                 //for (int i = 0; i < CurrentPoints.Count; i++)
                 //{
                 //    System.Diagnostics.Debug.WriteLine(CurrentPoints[i]);
@@ -389,7 +454,17 @@ namespace OptimizationMethods
                 Velocity = a[1];
                 BestPoints = a[2];
                 BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
-                BestSolution = Math.Round(function(BestPoint.X, BestPoint.Y), 7);
+                BestSolution = function(BestPoint.X, BestPoint.Y);
+            }
+            else if (SimulatedAnnealing)
+            {
+                if (IterationCount % IterBeforeCool == 0) Temperature *= Cooling;
+                List<List<Point>> a = Methods.SimulatedAnnealingIter(CurrentPoints, BestPoints, function, Temperature, Inertia);
+                CurrentPoints = a[0];
+                LivingPoints = CurrentPoints.Count;
+                BestPoints = a[1];
+                BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
+                BestSolution = function(BestPoint.X, BestPoint.Y);
             }
 
             if (NoBounds)
@@ -513,6 +588,14 @@ namespace OptimizationMethods
             set => this.RaiseAndSetIfChanged(ref extinctionROI, value);
         }
 
+        private bool simulatedAnnealing = false;
+
+        public bool SimulatedAnnealing
+        {
+            get => simulatedAnnealing;
+            set => this.RaiseAndSetIfChanged(ref simulatedAnnealing, value);
+        }
+
         private string indexMethod = "0";
 
         public string IndexMethod
@@ -527,6 +610,7 @@ namespace OptimizationMethods
                     CanonicalROI = false;
                     KNNROI = false;
                     ExtinctionROI = false;
+                    SimulatedAnnealing = false;
                 }
                 else if (value == "1")
                 {
@@ -535,6 +619,7 @@ namespace OptimizationMethods
                     CanonicalROI = false;
                     KNNROI = false;
                     ExtinctionROI = false;
+                    SimulatedAnnealing = false;
                 }
                 else if (value == "2")
                 {
@@ -543,6 +628,7 @@ namespace OptimizationMethods
                     CanonicalROI = true;
                     KNNROI = false;
                     ExtinctionROI = false;
+                    SimulatedAnnealing = false;
                 }
                 else if (value == "3")
                 {
@@ -551,6 +637,7 @@ namespace OptimizationMethods
                     CanonicalROI = false;
                     KNNROI = true;
                     ExtinctionROI = false;
+                    SimulatedAnnealing = false;
                 }
                 else if (value == "4")
                 {
@@ -559,6 +646,16 @@ namespace OptimizationMethods
                     CanonicalROI = false;
                     KNNROI = false;
                     ExtinctionROI = true;
+                    SimulatedAnnealing = false;
+                }
+                else if (value == "5")
+                {
+                    ClassicROI = false;
+                    InertialROI = false;
+                    CanonicalROI = false;
+                    KNNROI = false;
+                    ExtinctionROI = false;
+                    SimulatedAnnealing = true;
                 }
                 this.RaiseAndSetIfChanged(ref indexMethod, value);
             }

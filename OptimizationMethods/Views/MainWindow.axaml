@@ -9,7 +9,8 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="OptimizationMethods"
 		xmlns:oxy="http://oxyplot.org/avalonia"
-		x:Name="MyWindow">
+		x:Name="MyWindow"
+		xmlns:local="clr-namespace:OptimizationMethods;assembly=OptimizationMethods">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -17,15 +18,20 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
+	<Window.Resources>
+		<local:Converter x:Key="myConverter"/>
+	</Window.Resources>
+
 	<DockPanel>
 		<Grid ShowGridLines="False">
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="5*"/>
+				<ColumnDefinition Width="4*"/>
+				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
 
-			<oxy:PlotView Model="{Binding Optimization.MyPlotModel}"/>
+			<oxy:PlotView Grid.Column="0" Model="{Binding Optimization.MyPlotModel}"/>
 
 			<Grid Grid.Column="1">
 				<Grid.RowDefinitions>
@@ -58,6 +64,123 @@
 						 HorizontalContentAlignment="Center"
 						 Margin="5"
 						 FontSize="20"/>
+				<TextBlock Text="First Border"
+						   Grid.Row="2"
+						   VerticalAlignment="Center"
+					       HorizontalAlignment="Center"
+						   FontSize="20"/>
+				<TextBox Text="{Binding Optimization.FirstBorder}"
+						 Grid.Row="3"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="5"
+						 FontSize="20"/>
+				<TextBlock Text="Second Border"
+						   Grid.Row="4"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"/>
+				<TextBox Text="{Binding Optimization.SecondBorder}"
+						 Grid.Row="5"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="5"
+						 FontSize="20"/>
+				<TextBlock Text="Linspace Value"
+						   Grid.Row="6"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"/>
+				<TextBox Text="{Binding Optimization.LinspaceValue}"
+						 Grid.Row="7"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="5"
+						 FontSize="20"/>
+				<ComboBox SelectedIndex="{Binding Optimization.IndexLabeled, Mode=TwoWay}"
+						  HorizontalAlignment="Stretch"
+						  VerticalAlignment="Stretch"
+						  Grid.Row="8"
+						  Margin="5"
+						  VerticalContentAlignment="Center"
+						  HorizontalContentAlignment="Center"
+						  FontSize="20">
+					<ComboBoxItem Content="No Label"/>
+					<ComboBoxItem Content="Label"/>
+				</ComboBox>
+				<TextBlock Text="Number Of Points"
+						   Grid.Row="9"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"/>
+				<TextBox Text="{Binding Optimization.NumberOfPoints}"
+						 Grid.Row="10"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="5"
+						 FontSize="20"/>
+				<Button Command="{Binding Optimization.setRandomPoints}"
+						Content="Set Points"
+						Grid.Row="11"
+						HorizontalAlignment="Stretch"
+						VerticalAlignment="Stretch"
+						HorizontalContentAlignment="Center"
+						VerticalContentAlignment="Center"
+						Margin="5"
+						FontSize="20"/>
+				<TextBlock Text="Update Frequency"
+						   Grid.Row="12"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"/>
+				<TextBox Text="{Binding Optimization.UpdateFrequency}"
+						 Grid.Row="13"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="5"
+						 FontSize="20"/>
+			</Grid>
+			
+			
+
+			<Grid Grid.Column="2">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+				<TextBlock Text="Best Point"
+						   Grid.Row="0"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"/>
+				<Border Grid.Row="1"
+						BorderBrush="Black"
+						BorderThickness="2"
+						CornerRadius="3"
+						Padding="4">
+					<TextBlock Text="{Binding Optimization.BestPoint}"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Left"
+						   FontSize="20"/>
+				</Border>
 				<TextBlock Text="Best Solution"
 						   Grid.Row="2"
 						   VerticalAlignment="Center"
@@ -68,86 +191,47 @@
 						BorderThickness="2"
 						CornerRadius="3"
 						Padding="4">
-					<TextBlock Text="{Binding Optimization.BestSolution}"
+					<TextBlock Text="{Binding Optimization.BestSolution, Converter={StaticResource myConverter}, ConverterParameter=7}"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Left"
 						   FontSize="20"/>
 				</Border>
-				<TextBlock Text="First Border"
+				<TextBlock Text="Iteration Count"
 						   Grid.Row="4"
 						   VerticalAlignment="Center"
-					       HorizontalAlignment="Center"
+						   HorizontalAlignment="Center"
 						   FontSize="20"/>
-				<TextBox Text="{Binding Optimization.FirstBorder}"
-						 Grid.Row="5"
-						 VerticalAlignment="Stretch"
-						 HorizontalAlignment="Stretch"
-						 VerticalContentAlignment="Center"
-						 HorizontalContentAlignment="Center"
-						 Margin="5"
-						 FontSize="20"/>
-				<TextBlock Text="Second Border"
+				<TextBlock Text="{Binding Optimization.IterationCount}"
+						   Grid.Row="5"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"/>
+				<TextBlock Text="Living Points"
 						   Grid.Row="6"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
 						   FontSize="20"/>
-				<TextBox Text="{Binding Optimization.SecondBorder}"
-						 Grid.Row="7"
-						 VerticalAlignment="Stretch"
-						 HorizontalAlignment="Stretch"
-						 VerticalContentAlignment="Center"
-						 HorizontalContentAlignment="Center"
-						 Margin="5"
-						 FontSize="20"/>
-				<TextBlock Text="Linspace Value"
+				<TextBlock Text="{Binding Optimization.LivingPoints}"
+						   Grid.Row="7"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"/>
+				<TextBlock Text="Temperature"
 						   Grid.Row="8"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
-						   FontSize="20"/>
-				<TextBox Text="{Binding Optimization.LinspaceValue}"
-						 Grid.Row="9"
-						 VerticalAlignment="Stretch"
-						 HorizontalAlignment="Stretch"
-						 VerticalContentAlignment="Center"
-						 HorizontalContentAlignment="Center"
-						 Margin="5"
-						 FontSize="20"/>
-				<ComboBox SelectedIndex="{Binding Optimization.IndexLabeled, Mode=TwoWay}"
-						  HorizontalAlignment="Stretch"
-						  VerticalAlignment="Stretch"
-						  Grid.Row="10"
-						  Margin="5"
-						  VerticalContentAlignment="Center"
-						  HorizontalContentAlignment="Center"
-						  FontSize="20">
-					<ComboBoxItem Content="No Label"/>
-					<ComboBoxItem Content="Label"/>
-				</ComboBox>
-				<TextBlock Text="Number Of Points"
-						   Grid.Row="11"
+						   FontSize="20"
+						   IsVisible="{Binding Optimization.SimulatedAnnealing}"/>
+				<TextBlock Text="{Binding Optimization.Temperature}"
+						   Grid.Row="9"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
-						   FontSize="20"/>
-				<TextBox Text="{Binding Optimization.NumberOfPoints}"
-						 Grid.Row="12"
-						 VerticalAlignment="Stretch"
-						 HorizontalAlignment="Stretch"
-						 VerticalContentAlignment="Center"
-						 HorizontalContentAlignment="Center"
-						 Margin="5"
-						 FontSize="20"/>
-				<Button Command="{Binding Optimization.setRandomPoints}"
-						Content="Set Points"
-						Grid.Row="13"
-						HorizontalAlignment="Stretch"
-						VerticalAlignment="Stretch"
-						HorizontalContentAlignment="Center"
-						VerticalContentAlignment="Center"
-						Margin="5"
-						FontSize="20"/>
+						   FontSize="20"
+						   IsVisible="{Binding Optimization.SimulatedAnnealing}"/>
 			</Grid>
 
-			<Grid Grid.Column="2">
+
+			<Grid Grid.Column="3">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="*"/>
 					<RowDefinition Height="*"/>
@@ -162,23 +246,10 @@
 					<RowDefinition Height="*"/>
 					<RowDefinition Height="*"/>
 				</Grid.RowDefinitions>
-				<TextBlock Text="Update Frequency"
-						   Grid.Row="0"
-						   VerticalAlignment="Center"
-						   HorizontalAlignment="Center"
-						   FontSize="20"/>
-				<TextBox Text="{Binding Optimization.UpdateFrequency}"
-						 Grid.Row="1"
-						 VerticalAlignment="Stretch"
-						 HorizontalAlignment="Stretch"
-						 VerticalContentAlignment="Center"
-						 HorizontalContentAlignment="Center"
-						 Margin="5"
-						 FontSize="20"/>
 				<ComboBox SelectedIndex="{Binding Optimization.IndexMethod, Mode=TwoWay}"
 						  HorizontalAlignment="Stretch"
 						  VerticalAlignment="Stretch"
-						  Grid.Row="2"
+						  Grid.Row="0"
 						  Margin="5"
 						  VerticalContentAlignment="Center"
 						  HorizontalContentAlignment="Center"
@@ -188,11 +259,12 @@
 					<ComboBoxItem Content="Canonical ROI"/>
 					<ComboBoxItem Content="KNN ROI"/>
 					<ComboBoxItem Content="Extinction ROI"/>
+					<ComboBoxItem Content="Simulated Annealing"/>
 				</ComboBox>
 				<ComboBox SelectedIndex="{Binding Optimization.IndexBound, Mode=TwoWay}"
 						  HorizontalAlignment="Stretch"
 						  VerticalAlignment="Stretch"
-						  Grid.Row="3"
+						  Grid.Row="1"
 						  Margin="5"
 						  VerticalContentAlignment="Center"
 						  HorizontalContentAlignment="Center"
@@ -204,7 +276,7 @@
 				</ComboBox>
 				<Button Command="{Binding Optimization.distimerStartStop}"
 						Content="{Binding Optimization.StartStopButtonName}"
-						Grid.Row="4"
+						Grid.Row="2"
 						HorizontalAlignment="Stretch"
 						VerticalAlignment="Stretch"
 						HorizontalContentAlignment="Center"
@@ -213,7 +285,7 @@
 						FontSize="20"/>
 				<Button Command="{Binding Optimization.distimerReset}"
 						Content="Reset"
-						Grid.Row="5"
+						Grid.Row="3"
 						HorizontalAlignment="Stretch"
 						VerticalAlignment="Stretch"
 						HorizontalContentAlignment="Center"
@@ -221,7 +293,7 @@
 						Margin="5"
 						FontSize="20"/>
 				<TextBlock Text="R_p"
-						   Grid.Row="6"
+						   Grid.Row="4"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
 						   FontSize="20">
@@ -235,7 +307,7 @@
 					</TextBlock.IsVisible>
 				</TextBlock>
 				<TextBox Text="{Binding Optimization.R_p}"
-						 Grid.Row="7"
+						 Grid.Row="5"
 						 VerticalAlignment="Stretch"
 						 HorizontalAlignment="Stretch"
 						 VerticalContentAlignment="Center"
@@ -252,7 +324,7 @@
 					</TextBox.IsVisible>
 				</TextBox>
 				<TextBlock Text="R_g"
-						   Grid.Row="8"
+						   Grid.Row="6"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
 						   FontSize="20">
@@ -266,7 +338,7 @@
 					</TextBlock.IsVisible>
 				</TextBlock>
 				<TextBox Text="{Binding Optimization.R_g}"
-						 Grid.Row="9"
+						 Grid.Row="7"
 						 VerticalAlignment="Stretch"
 						 HorizontalAlignment="Stretch"
 						 VerticalContentAlignment="Center"
@@ -283,7 +355,7 @@
 					</TextBox.IsVisible>
 				</TextBox>
 				<TextBlock Text="Inertia"
-						   Grid.Row="10"
+						   Grid.Row="8"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
 						   FontSize="20">
@@ -292,11 +364,12 @@
 							<Binding Path="Optimization.InertialROI"/>
 							<Binding Path="Optimization.KNNROI"/>
 							<Binding Path="Optimization.ExtinctionROI"/>
+							<Binding Path="Optimization.SimulatedAnnealing"/>
 						</MultiBinding>
 					</TextBlock.IsVisible>
 				</TextBlock>
 				<TextBox Text="{Binding Optimization.Inertia}"
-						 Grid.Row="11"
+						 Grid.Row="9"
 						 VerticalAlignment="Stretch"
 						 HorizontalAlignment="Stretch"
 						 VerticalContentAlignment="Center"
@@ -308,17 +381,18 @@
 							<Binding Path="Optimization.InertialROI"/>
 							<Binding Path="Optimization.KNNROI"/>
 							<Binding Path="Optimization.ExtinctionROI"/>
+							<Binding Path="Optimization.SimulatedAnnealing"/>
 						</MultiBinding>
 					</TextBox.IsVisible>
 				</TextBox>
 				<TextBlock Text="Kanon"
-						   Grid.Row="10"
+						   Grid.Row="8"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
 						   FontSize="20"
 						   IsVisible="{Binding Optimization.CanonicalROI}"/>
 				<TextBox Text="{Binding Optimization.Kanon}"
-						 Grid.Row="11"
+						 Grid.Row="9"
 						 VerticalAlignment="Stretch"
 						 HorizontalAlignment="Stretch"
 						 VerticalContentAlignment="Center"
@@ -327,13 +401,13 @@
 						 FontSize="20"
 						 IsVisible="{Binding Optimization.CanonicalROI}"/>
 				<TextBlock Text="R"
-						   Grid.Row="6"
+						   Grid.Row="4"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
 						   FontSize="20"
 						   IsVisible="{Binding Optimization.KNNROI}"/>
 				<TextBox Text="{Binding Optimization.RKNN}"
-						 Grid.Row="7"
+						 Grid.Row="5"
 						 VerticalAlignment="Stretch"
 						 HorizontalAlignment="Stretch"
 						 VerticalContentAlignment="Center"
@@ -342,13 +416,13 @@
 						 FontSize="20"
 						 IsVisible="{Binding Optimization.KNNROI}"/>
 				<TextBlock Text="K Neighbours"
-						   Grid.Row="8"
+						   Grid.Row="6"
 						   VerticalAlignment="Center"
 						   HorizontalAlignment="Center"
 						   FontSize="20"
 						   IsVisible="{Binding Optimization.KNNROI}"/>
 				<TextBox Text="{Binding Optimization.KNeighbours}"
-						 Grid.Row="9"
+						 Grid.Row="7"
 						 VerticalAlignment="Stretch"
 						 HorizontalAlignment="Stretch"
 						 VerticalContentAlignment="Center"
@@ -356,6 +430,51 @@
 						 Margin="5"
 						 FontSize="20"
 						 IsVisible="{Binding Optimization.KNNROI}"/>
+				<TextBlock Text="Init Temperature"
+						   Grid.Row="4"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"
+						   IsVisible="{Binding Optimization.SimulatedAnnealing}"/>
+				<TextBox Text="{Binding Optimization.InitTemperature}"
+						   Grid.Row="5"
+						   VerticalAlignment="Stretch"
+						   HorizontalAlignment="Stretch"
+						   VerticalContentAlignment="Center"
+						   HorizontalContentAlignment="Center"
+						   Margin="5"
+						   FontSize="20"
+						   IsVisible="{Binding Optimization.SimulatedAnnealing}"/>
+				<TextBlock Text="Cooling"
+						   Grid.Row="6"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"
+						   IsVisible="{Binding Optimization.SimulatedAnnealing}"/>
+				<TextBox Text="{Binding Optimization.Cooling}"
+						   Grid.Row="7"
+						   VerticalAlignment="Stretch"
+						   HorizontalAlignment="Stretch"
+						   VerticalContentAlignment="Center"
+						   HorizontalContentAlignment="Center"
+						   Margin="5"
+						   FontSize="20"
+						   IsVisible="{Binding Optimization.SimulatedAnnealing}"/>
+				<TextBlock Text="Iter Before Cool"
+						   Grid.Row="10"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"
+						   IsVisible="{Binding Optimization.SimulatedAnnealing}"/>
+				<TextBox Text="{Binding Optimization.IterBeforeCool}"
+						   Grid.Row="11"
+						   VerticalAlignment="Stretch"
+						   HorizontalAlignment="Stretch"
+						   VerticalContentAlignment="Center"
+						   HorizontalContentAlignment="Center"
+						   Margin="5"
+						   FontSize="20"
+						   IsVisible="{Binding Optimization.SimulatedAnnealing}"/>
 			</Grid>
 		</Grid>
 	</DockPanel>
