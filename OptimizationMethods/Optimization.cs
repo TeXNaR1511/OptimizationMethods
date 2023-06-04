@@ -274,8 +274,8 @@ namespace OptimizationMethods
             });
             model.Axes.Add(new OxyPlot.Axes.LinearColorAxis
             {
-                //Palette = OxyPalettes.Rainbow(256),
-                Palette = OxyPalettes.Magma(256),
+                Palette = OxyPalettes.Plasma(256),
+                //Palette = OxyPalettes.Magma(256),
                 Position = AxisPosition.Top,
                 MajorTickSize = 10,
                 MinorTickSize = 7,
@@ -320,7 +320,7 @@ namespace OptimizationMethods
                 pt = new OxyPlot.Series.ScatterSeries
                 {
                     MarkerType = MarkerType.Circle,
-                    MarkerFill = OxyColor.FromRgb(0, 157, 255),
+                    MarkerFill = OxyColor.FromRgb(0, 200, 255),
                     //TextColor = OxyColors.White,
                     //FontSize = 10,
                     //LabelMargin = -5,
