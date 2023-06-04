@@ -200,6 +200,20 @@ namespace OptimizationMethods
             set => this.RaiseAndSetIfChanged(ref iterBeforeCool, value);
         }
 
+        private int kChild = 20;
+        public int KChild
+        {
+            get => kChild;
+            set => this.RaiseAndSetIfChanged(ref kChild, value);
+        }
+
+        private double birthRate = 0.1;
+        public double BirthRate
+        {
+            get => birthRate;
+            set => this.RaiseAndSetIfChanged(ref birthRate, value);
+        }
+
 
 
         public Optimization()
@@ -368,9 +382,10 @@ namespace OptimizationMethods
                 Point vel = Point.CreateRandomPoint(-Point.FromString(SecondBorder) + Point.FromString(FirstBorder), Point.FromString(SecondBorder) - Point.FromString(FirstBorder));
                 CurrentPoints.Add(cur);
                 Velocity.Add(vel);
+                BestPoints.Add(cur - vel);
             }
 
-            BestPoints = CurrentPoints;
+            //BestPoints = CurrentPoints;
             LivingPoints = CurrentPoints.Count;
             BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
             BestSolution = function(BestPoint.X, BestPoint.Y);
@@ -460,6 +475,16 @@ namespace OptimizationMethods
             {
                 if (IterationCount % IterBeforeCool == 0) Temperature *= Cooling;
                 List<List<Point>> a = Methods.SimulatedAnnealingIter(CurrentPoints, BestPoints, function, Temperature, Inertia);
+                CurrentPoints = a[0];
+                LivingPoints = CurrentPoints.Count;
+                BestPoints = a[1];
+                BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
+                BestSolution = function(BestPoint.X, BestPoint.Y);
+            }
+            else if (SimpleGenetic)
+            {
+                var phi = Point.CreateRandomPoint(new Point(0, 0), new Point(1, 1));
+                List<List<Point>> a = Methods.SimpleGeneticIter(CurrentPoints, BestPoints, BestPoint, function, KNeighbours, new Point(R_p, R_g), phi, KChild, BirthRate);
                 CurrentPoints = a[0];
                 LivingPoints = CurrentPoints.Count;
                 BestPoints = a[1];
@@ -596,6 +621,14 @@ namespace OptimizationMethods
             set => this.RaiseAndSetIfChanged(ref simulatedAnnealing, value);
         }
 
+        private bool simpleGenetic = false;
+
+        public bool SimpleGenetic
+        {
+            get => simpleGenetic;
+            set => this.RaiseAndSetIfChanged(ref simpleGenetic, value);
+        }
+
         private string indexMethod = "0";
 
         public string IndexMethod
@@ -611,6 +644,7 @@ namespace OptimizationMethods
                     KNNROI = false;
                     ExtinctionROI = false;
                     SimulatedAnnealing = false;
+                    SimpleGenetic = false;
                 }
                 else if (value == "1")
                 {
@@ -620,6 +654,7 @@ namespace OptimizationMethods
                     KNNROI = false;
                     ExtinctionROI = false;
                     SimulatedAnnealing = false;
+                    SimpleGenetic = false;
                 }
                 else if (value == "2")
                 {
@@ -629,6 +664,7 @@ namespace OptimizationMethods
                     KNNROI = false;
                     ExtinctionROI = false;
                     SimulatedAnnealing = false;
+                    SimpleGenetic = false;
                 }
                 else if (value == "3")
                 {
@@ -638,6 +674,7 @@ namespace OptimizationMethods
                     KNNROI = true;
                     ExtinctionROI = false;
                     SimulatedAnnealing = false;
+                    SimpleGenetic = false;
                 }
                 else if (value == "4")
                 {
@@ -647,6 +684,7 @@ namespace OptimizationMethods
                     KNNROI = false;
                     ExtinctionROI = true;
                     SimulatedAnnealing = false;
+                    SimpleGenetic = false;
                 }
                 else if (value == "5")
                 {
@@ -656,6 +694,17 @@ namespace OptimizationMethods
                     KNNROI = false;
                     ExtinctionROI = false;
                     SimulatedAnnealing = true;
+                    SimpleGenetic = false;
+                }
+                else if (value == "6")
+                {
+                    ClassicROI = false;
+                    InertialROI = false;
+                    CanonicalROI = false;
+                    KNNROI = false;
+                    ExtinctionROI = false;
+                    SimulatedAnnealing = false;
+                    SimpleGenetic = true;
                 }
                 this.RaiseAndSetIfChanged(ref indexMethod, value);
             }

@@ -1,4 +1,5 @@
 ﻿using MathNet.Numerics.Distributions;
+using OxyPlot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -206,6 +207,62 @@ namespace OptimizationMethods
 
             return new List<List<Point>> { points, newBestPoints };
             
+        }
+
+        public static List<List<Point>> SimpleGeneticIter(List<Point> points, List<Point> bestPoints, Point best, Func<double, double, double> function, int kNeighbours, Point R, Point Phi, int kChild, double birthRate)
+        {
+            var uniform = new ContinuousUniform(0, 1);
+            
+            //kill randomly
+            
+            for (int i = 0; i < points.Count; i++)
+            {
+                if (uniform.Sample() < birthRate)
+                {
+                    //System.Diagnostics.Debug.WriteLine("check");
+                    points.RemoveAt(i);
+                    bestPoints.RemoveAt(i);
+                    i--;
+                }
+            }
+          
+            //System.Diagnostics.Debug.WriteLine(uglyDuckling);
+        
+            var listWithNeighbors = findKNN(points, kNeighbours);
+        
+            List<Point> childrens = new List<Point>();
+        
+            for (int i = 0; i < points.Count; i++)
+            {
+                if (uniform.Sample() < birthRate)
+                {
+                    var newChild = points[i];
+                    for (int j = 0; j < listWithNeighbors[i].Count; j++)
+                    {
+                        newChild += listWithNeighbors[i][j];
+                    }
+                    newChild /= (1 + listWithNeighbors[i].Count);
+                    childrens.Add(newChild);
+                }
+                if (childrens.Count == kChild) break;
+            }
+
+            for (int i = 0; i < points.Count; i++)
+            {
+                points[i] += R.X * Phi.X * (bestPoints[i] - points[i]) + R.Y * Phi.Y * (best - points[i]);
+            }
+        
+            List<Point> newBestPoints = new List<Point>();
+            for (int i = 0; i < points.Count; i++)
+            {
+                newBestPoints.Add(function(points[i].X, points[i].Y) <= function(bestPoints[i].X, bestPoints[i].Y) ? points[i] : bestPoints[i]);
+            }
+        
+            points.AddRange(childrens);
+            newBestPoints.AddRange(childrens);
+        
+            return new List<List<Point>> { points, newBestPoints };
+        
         }
     }
 }

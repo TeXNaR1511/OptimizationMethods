@@ -245,6 +245,8 @@
 					<RowDefinition Height="*"/>
 					<RowDefinition Height="*"/>
 					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
 				</Grid.RowDefinitions>
 				<ComboBox SelectedIndex="{Binding Optimization.IndexMethod, Mode=TwoWay}"
 						  HorizontalAlignment="Stretch"
@@ -260,6 +262,7 @@
 					<ComboBoxItem Content="KNN ROI"/>
 					<ComboBoxItem Content="Extinction ROI"/>
 					<ComboBoxItem Content="Simulated Annealing"/>
+					<ComboBoxItem Content="Simple Genetic"/>
 				</ComboBox>
 				<ComboBox SelectedIndex="{Binding Optimization.IndexBound, Mode=TwoWay}"
 						  HorizontalAlignment="Stretch"
@@ -303,6 +306,7 @@
 							<Binding Path="Optimization.InertialROI"/>
 							<Binding Path="Optimization.CanonicalROI"/>
 							<Binding Path="Optimization.ExtinctionROI"/>
+							<Binding Path="Optimization.SimpleGenetic"/>
 						</MultiBinding>
 					</TextBlock.IsVisible>
 				</TextBlock>
@@ -320,6 +324,7 @@
 							<Binding Path="Optimization.InertialROI"/>
 							<Binding Path="Optimization.CanonicalROI"/>
 							<Binding Path="Optimization.ExtinctionROI"/>
+							<Binding Path="Optimization.SimpleGenetic"/>
 						</MultiBinding>
 					</TextBox.IsVisible>
 				</TextBox>
@@ -334,6 +339,7 @@
 							<Binding Path="Optimization.InertialROI"/>
 							<Binding Path="Optimization.CanonicalROI"/>
 							<Binding Path="Optimization.ExtinctionROI"/>
+							<Binding Path="Optimization.SimpleGenetic"/>
 						</MultiBinding>
 					</TextBlock.IsVisible>
 				</TextBlock>
@@ -351,6 +357,7 @@
 							<Binding Path="Optimization.InertialROI"/>
 							<Binding Path="Optimization.CanonicalROI"/>
 							<Binding Path="Optimization.ExtinctionROI"/>
+							<Binding Path="Optimization.SimpleGenetic"/>
 						</MultiBinding>
 					</TextBox.IsVisible>
 				</TextBox>
@@ -475,6 +482,51 @@
 						   Margin="5"
 						   FontSize="20"
 						   IsVisible="{Binding Optimization.SimulatedAnnealing}"/>
+				<TextBlock Text="K Neighbours"
+						   Grid.Row="8"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"
+						   IsVisible="{Binding Optimization.SimpleGenetic}"/>
+				<TextBox Text="{Binding Optimization.KNeighbours}"
+						 Grid.Row="9"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="5"
+						 FontSize="20"
+						 IsVisible="{Binding Optimization.SimpleGenetic}"/>
+				<TextBlock Text="K Child"
+						   Grid.Row="10"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"
+						   IsVisible="{Binding Optimization.SimpleGenetic}"/>
+				<TextBox Text="{Binding Optimization.KChild}"
+						 Grid.Row="11"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="5"
+						 FontSize="20"
+						 IsVisible="{Binding Optimization.SimpleGenetic}"/>
+				<TextBlock Text="Birth Rate"
+						   Grid.Row="12"
+						   VerticalAlignment="Center"
+						   HorizontalAlignment="Center"
+						   FontSize="20"
+						   IsVisible="{Binding Optimization.SimpleGenetic}"/>
+				<TextBox Text="{Binding Optimization.BirthRate}"
+						 Grid.Row="13"
+						 VerticalAlignment="Stretch"
+						 HorizontalAlignment="Stretch"
+						 VerticalContentAlignment="Center"
+						 HorizontalContentAlignment="Center"
+						 Margin="5"
+						 FontSize="20"
+						 IsVisible="{Binding Optimization.SimpleGenetic}"/>
 			</Grid>
 		</Grid>
 	</DockPanel>
