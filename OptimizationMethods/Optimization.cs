@@ -320,7 +320,7 @@ namespace OptimizationMethods
                 pt = new OxyPlot.Series.ScatterSeries
                 {
                     MarkerType = MarkerType.Circle,
-                    MarkerFill = OxyColor.FromRgb(0, 200, 255),
+                    MarkerFill = OxyColor.FromRgb(0, 190, 255),
                     //TextColor = OxyColors.White,
                     //FontSize = 10,
                     //LabelMargin = -5,
@@ -382,10 +382,10 @@ namespace OptimizationMethods
                 Point vel = Point.CreateRandomPoint(-Point.FromString(SecondBorder) + Point.FromString(FirstBorder), Point.FromString(SecondBorder) - Point.FromString(FirstBorder));
                 CurrentPoints.Add(cur);
                 Velocity.Add(vel);
-                BestPoints.Add(cur - vel);
+                //BestPoints.Add(cur - vel);
             }
 
-            //BestPoints = CurrentPoints;
+            BestPoints = CurrentPoints;
             LivingPoints = CurrentPoints.Count;
             BestPoint = BestPoints.Select(x => (function(x.X, x.Y), x)).Min().Item2;
             BestSolution = function(BestPoint.X, BestPoint.Y);
